@@ -7,7 +7,7 @@ const App = () => {
     <BrowserRouter>
       <div className="flex w-full h-full">
         <Sidebar />
-        <div className="w-full border border-red-700">
+        <div className="w-full h-full">
           <AppRoutes />
         </div>
       </div>

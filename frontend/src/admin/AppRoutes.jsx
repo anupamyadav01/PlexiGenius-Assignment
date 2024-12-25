@@ -3,6 +3,7 @@ import Dashboard from "./pages/Dashboard/Dashboard.jsx";
 import Products from "./pages/Products/Products.jsx";
 import Orders from "./pages/Orders/Orders.jsx";
 import Customers from "./pages/Customers/Customers.jsx";
+import Category from "./pages/Categories/Categories.jsx";
 
 const AppRoutes = () => {
   return (
@@ -11,6 +12,7 @@ const AppRoutes = () => {
       <Route path="/products" element={<Products />} />
       <Route path="/orders" element={<Orders />} />
       <Route path="/customers" element={<Customers />} />
+      <Route path="/categories" element={<Category />} />
     </Routes>
   );
 };
