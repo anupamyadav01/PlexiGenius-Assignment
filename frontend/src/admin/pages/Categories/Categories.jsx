@@ -186,9 +186,8 @@ const Category = () => {
             "& .MuiDataGrid-cell": { textAlign: "center" },
             "& .MuiDataGrid-columnHeaders": {
               backgroundColor: theme.palette.primary.main,
-              color: theme.palette.primary.contrastText,
               textAlign: "center",
-              fontWeight: "bold",
+              fontSize: "1.1rem",
             },
             "& .MuiDataGrid-row:hover": {
               backgroundColor: theme.palette.action.hover,

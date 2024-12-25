@@ -114,17 +114,20 @@ const Customer = () => {
         sx={{
           height: 450,
           width: "80%",
+          padding: 2,
           margin: "0 auto",
           boxShadow: 4,
           "& .MuiDataGrid-root": { border: "none" },
           "& .MuiDataGrid-columnHeaders": {
             backgroundColor: "#e3f2fd",
             fontWeight: "bold",
+            fontSize: "1.1rem",
           },
           "& .MuiDataGrid-row:nth-of-type(odd)": {
             backgroundColor: "#f9f9f9",
+            textAlign: "start",
           },
-          "& .MuiDataGrid-cell": { textAlign: "center" },
+          "& .MuiDataGrid-cell": {},
         }}
       >
         {filteredCustomers.length > 0 ? (

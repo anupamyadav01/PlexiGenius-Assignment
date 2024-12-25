@@ -91,6 +91,7 @@ const OrderManagement = () => {
       field: "status",
       headerName: "Order Status",
       width: 200,
+      display: "flex",
       renderCell: (params) => (
         <Typography
           sx={{
@@ -184,8 +185,6 @@ const OrderManagement = () => {
           rowsPerPageOptions={[5, 10, 20]}
           sx={{
             "& .MuiDataGrid-columnHeaders": {
-              backgroundColor: "#3f51b5",
-              color: "#fff",
               fontWeight: "bold",
               fontSize: "16px",
             },

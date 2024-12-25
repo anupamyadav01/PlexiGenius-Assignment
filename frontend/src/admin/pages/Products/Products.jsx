@@ -203,6 +203,7 @@ const Products = () => {
           "& .MuiDataGrid-root": {
             borderRadius: 1,
             backgroundColor: "#ffffff",
+            fontSize: "1.1rem",
             boxShadow: "0 3px 6px rgba(0,0,0,0.1)",
           },
           "& .MuiDataGrid-cell": {
