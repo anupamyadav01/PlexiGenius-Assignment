@@ -8,6 +8,7 @@ import {
   ExpandLess,
 } from "@mui/icons-material";
 import { Collapse } from "@mui/material";
+import { Link } from "react-router-dom";
 
 const Sidebar = () => {
   const [active, setActive] = useState("Dashboard"); // Track the active menu item
@@ -24,12 +25,11 @@ const Sidebar = () => {
 
   return (
     <div className="w-[20%] h-screen bg-[#202d31] text-white shadow-lg flex flex-col">
-      {/* Sidebar Menu */}
-      <ul className="flex-1 py-4 space-y-4">
-        {/* Dashboard */}
-        <li
+      <ul className="flex-1 space-y-2">
+        <Link
+          to="/"
           onClick={() => handleClick("Dashboard")}
-          className={`group flex items-center space-x-4 py-4 px-6 rounded cursor-pointer transition-all duration-300 ${
+          className={`group flex items-center space-x-4 py-5 px-6 rounded cursor-pointer transition-all duration-300 ${
             active === "Dashboard"
               ? "bg-gradient-to-r from-blue-600 via-purple-500 to-pink-500 shadow-lg scale-100"
               : "hover:bg-gradient-to-r hover:from-blue-600 hover:via-purple-500 hover:to-pink-500"
@@ -37,12 +37,12 @@ const Sidebar = () => {
         >
           <Home fontSize="medium" />
           <span className="text-base font-medium">Dashboard</span>
-        </li>
+        </Link>
 
-        {/* Products */}
-        <li
+        <Link
+          to="/products"
           onClick={() => handleClick("Products")}
-          className={`group flex items-center space-x-4 py-4 px-6 rounded cursor-pointer transition-all duration-300 ${
+          className={`group flex items-center space-x-4 py-5 px-6 rounded cursor-pointer transition-all duration-300 ${
             active === "Products"
               ? "bg-gradient-to-r from-blue-600 via-purple-500 to-pink-500 shadow-lg scale-100"
               : "hover:bg-gradient-to-r hover:from-blue-600 hover:via-purple-500 hover:to-pink-500"
@@ -50,12 +50,12 @@ const Sidebar = () => {
         >
           <Inventory fontSize="small" />
           <span className="text-sm font-medium">Products</span>
-        </li>
+        </Link>
 
-        {/* Orders */}
-        <li
+        <Link
+          to="/orders"
           onClick={() => handleClick("Orders")}
-          className={`group flex items-center space-x-4 py-4 px-6 rounded cursor-pointer transition-all duration-300 ${
+          className={`group flex items-center space-x-4 py-5 px-6 rounded cursor-pointer transition-all duration-300 ${
             active === "Orders"
               ? "bg-gradient-to-r from-blue-600 via-purple-500 to-pink-500 shadow-lg scale-100"
               : "hover:bg-gradient-to-r hover:from-blue-600 hover:via-purple-500 hover:to-pink-500"
@@ -63,12 +63,11 @@ const Sidebar = () => {
         >
           <ShoppingCart fontSize="small" />
           <span className="text-sm font-medium">Orders</span>
-        </li>
+        </Link>
 
-        {/* Users */}
-        <li
+        <div
           onClick={() => handleClick("Users")}
-          className={`group flex items-center space-x-4 py-4 px-6 rounded cursor-pointer transition-all duration-300 ${
+          className={`group flex items-center space-x-4 py-5 px-6 rounded cursor-pointer transition-all duration-300 ${
             active === "Users"
               ? "bg-gradient-to-r from-blue-600 via-purple-500 to-pink-500 shadow-lg scale-100"
               : "hover:bg-gradient-to-r hover:from-blue-600 hover:via-purple-500 hover:to-pink-500"
@@ -81,12 +80,12 @@ const Sidebar = () => {
           ) : (
             <ExpandMore fontSize="small" />
           )}
-        </li>
+        </div>
 
-        {/* Collapsible Menu */}
         <Collapse in={open}>
           <ul className="pl-8 space-y-3">
-            <li
+            <Link
+              to="/users/admins"
               className={`text-sm cursor-pointer transition-all duration-300 ${
                 active === "Admins"
                   ? "text-pink-400 font-bold"
@@ -95,8 +94,9 @@ const Sidebar = () => {
               onClick={() => handleClick("Admins")}
             >
               Admins
-            </li>
-            <li
+            </Link>
+            <Link
+              to="/users/customers"
               className={`text-sm cursor-pointer transition-all duration-300 ${
                 active === "Customers"
                   ? "text-pink-400 font-bold"
@@ -105,12 +105,11 @@ const Sidebar = () => {
               onClick={() => handleClick("Customers")}
             >
               Customers
-            </li>
+            </Link>
           </ul>
         </Collapse>
       </ul>
 
-      {/* Sidebar Footer */}
       <div className="p-4 border-t border-blue-800">
         <p className="text-center text-xs">© 2024 Admin Panel</p>
       </div>

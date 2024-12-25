@@ -3,7 +3,7 @@ import { Logout } from "@mui/icons-material";
 
 const Dashboard = () => {
   return (
-    <div className="w-4/5 h-full bg-gray-100">
+    <div className="h-full bg-gray-100">
       {/* Navbar */}
       <nav className="flex justify-between items-center h-16 px-6 bg-white text-black shadow-lg">
         {/* Logo */}

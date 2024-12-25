@@ -1,14 +1,17 @@
+import { BrowserRouter } from "react-router-dom";
 import Sidebar from "./admin/components/Sidebar";
-import Dashboard from "./admin/pages/Dashboard/Dashboard";
+import AppRoutes from "./admin/AppRoutes";
 
 const App = () => {
   return (
-    <>
+    <BrowserRouter>
       <div className="flex w-full h-full">
         <Sidebar />
-        <Dashboard />
+        <div className="w-full border border-red-700">
+          <AppRoutes />
+        </div>
       </div>
-    </>
+    </BrowserRouter>
   );
 };
 
