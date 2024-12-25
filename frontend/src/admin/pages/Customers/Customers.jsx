@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Box, TextField, Typography, IconButton } from "@mui/material";
+import { Box, TextField, Typography, InputAdornment } from "@mui/material";
 import { DataGrid } from "@mui/x-data-grid";
 import SearchIcon from "@mui/icons-material/Search";
 
@@ -62,15 +62,31 @@ const Customer = () => {
   ];
 
   return (
-    <Box p={3}>
-      <Typography variant="h4" gutterBottom>
+    <Box
+      p={3}
+      sx={{
+        background: "linear-gradient(135deg, #f5f7fa, #c3cfe2)",
+        minHeight: "100vh",
+      }}
+    >
+      <Typography
+        variant="h4"
+        gutterBottom
+        textAlign="center"
+        fontWeight="bold"
+      >
         Customer Management
       </Typography>
+
       <Box
         display="flex"
-        justifyContent="space-between"
+        justifyContent="center"
         alignItems="center"
-        mb={2}
+        mb={3}
+        sx={{
+          flexDirection: { xs: "column", md: "row" },
+          gap: { xs: 2, md: 0 },
+        }}
       >
         <TextField
           placeholder="Search by Name or Email"
@@ -79,34 +95,55 @@ const Customer = () => {
           value={filterText}
           onChange={handleSearchChange}
           InputProps={{
-            endAdornment: (
-              <IconButton>
+            startAdornment: (
+              <InputAdornment position="start">
                 <SearchIcon />
-              </IconButton>
+              </InputAdornment>
             ),
           }}
-          sx={{ width: "50%" }}
+          sx={{
+            width: { xs: "100%", md: "50%" },
+            boxShadow: "0px 2px 5px rgba(0, 0, 0, 0.1)",
+            borderRadius: 2,
+          }}
         />
       </Box>
 
       {/* Data Table */}
       <Box
         sx={{
-          height: 400,
-          width: "100%",
+          height: 450,
+          width: "80%",
+          margin: "0 auto",
+          boxShadow: 4,
           "& .MuiDataGrid-root": { border: "none" },
+          "& .MuiDataGrid-columnHeaders": {
+            backgroundColor: "#e3f2fd",
+            fontWeight: "bold",
+          },
+          "& .MuiDataGrid-row:nth-of-type(odd)": {
+            backgroundColor: "#f9f9f9",
+          },
+          "& .MuiDataGrid-cell": { textAlign: "center" },
         }}
       >
-        <DataGrid
-          rows={filteredCustomers}
-          columns={columns}
-          pageSize={5}
-          rowsPerPageOptions={[5, 10, 20]}
-          sx={{
-            "& .MuiDataGrid-cell": { textAlign: "center" },
-            "& .MuiDataGrid-columnHeaders": { backgroundColor: "#f5f5f5" },
-          }}
-        />
+        {filteredCustomers.length > 0 ? (
+          <DataGrid
+            rows={filteredCustomers}
+            columns={columns}
+            pageSize={5}
+            rowsPerPageOptions={[5, 10, 20]}
+            sx={{
+              "& .MuiDataGrid-cell:hover": {
+                color: "#1565c0",
+              },
+            }}
+          />
+        ) : (
+          <Typography variant="body1" color="text.secondary" textAlign="center">
+            No customers found. Please refine your search.
+          </Typography>
+        )}
       </Box>
     </Box>
   );

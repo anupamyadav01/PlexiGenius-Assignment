@@ -102,7 +102,13 @@ const Category = () => {
           <Tooltip title="Edit">
             <IconButton
               onClick={() => handleEditCategory(params.row)}
-              color="primary"
+              sx={{
+                color: theme.palette.primary.main,
+                backgroundColor: theme.palette.action.hover,
+                "&:hover": {
+                  backgroundColor: theme.palette.action.selected,
+                },
+              }}
             >
               <EditIcon />
             </IconButton>
@@ -110,7 +116,13 @@ const Category = () => {
           <Tooltip title="Delete">
             <IconButton
               onClick={() => handleOpenDeleteDialog(params.row)}
-              color="error"
+              sx={{
+                color: theme.palette.error.main,
+                backgroundColor: theme.palette.action.hover,
+                "&:hover": {
+                  backgroundColor: theme.palette.error.light,
+                },
+              }}
             >
               <DeleteIcon />
             </IconButton>
@@ -122,12 +134,13 @@ const Category = () => {
 
   return (
     <Box
-      p={4}
+      p={3}
       sx={{
-        backgroundColor: theme.palette.background.default,
+        background: "linear-gradient(135deg, #f5f7fa, #c3cfe2)",
         minHeight: "100vh",
       }}
     >
+      {/* Header */}
       <Box
         display="flex"
         justifyContent="space-between"
@@ -139,7 +152,6 @@ const Category = () => {
           sx={{
             fontWeight: "bold",
             textTransform: "uppercase",
-            color: theme.palette.text.primary,
           }}
         >
           Category Management
@@ -155,13 +167,13 @@ const Category = () => {
         </Button>
       </Box>
 
+      {/* DataGrid */}
       <Box
         sx={{
           height: 500,
           backgroundColor: "white",
           boxShadow: theme.shadows[4],
           borderRadius: 2,
-          overflow: "hidden",
         }}
       >
         <DataGrid
@@ -176,13 +188,10 @@ const Category = () => {
               backgroundColor: theme.palette.primary.main,
               color: theme.palette.primary.contrastText,
               textAlign: "center",
-              fontSize: "1rem",
+              fontWeight: "bold",
             },
-            "& .MuiDataGrid-row": {
-              transition: "background-color 0.3s",
-              "&:hover": {
-                backgroundColor: theme.palette.action.hover,
-              },
+            "& .MuiDataGrid-row:hover": {
+              backgroundColor: theme.palette.action.hover,
             },
           }}
         />
@@ -193,10 +202,14 @@ const Category = () => {
         open={isDialogOpen}
         onClose={handleCloseDialog}
         PaperProps={{
-          sx: { padding: 3, borderRadius: 3, maxWidth: 500, margin: "auto" },
+          sx: {
+            padding: 3,
+            borderRadius: 3,
+            maxWidth: 500,
+          },
         }}
       >
-        <DialogTitle sx={{ fontWeight: "bold", textAlign: "center" }}>
+        <DialogTitle>
           {isEditMode ? "Edit Category" : "Add Category"}
           <IconButton
             onClick={handleCloseDialog}
@@ -205,15 +218,13 @@ const Category = () => {
             <CloseIcon />
           </IconButton>
         </DialogTitle>
-        <Divider sx={{ marginY: 2 }} />
+        <Divider />
         <DialogContent>
           <TextField
             label="Category Name"
             value={categoryName}
             onChange={(e) => setCategoryName(e.target.value)}
             fullWidth
-            required
-            variant="outlined"
             sx={{ marginBottom: 3 }}
           />
           <Box display="flex" justifyContent="flex-end">
@@ -221,40 +232,35 @@ const Category = () => {
               variant="contained"
               color="primary"
               onClick={handleAddCategory}
-              sx={{ paddingX: 4, borderRadius: 2 }}
               disabled={!categoryName.trim()}
             >
-              {isEditMode ? "Update Category" : "Add Category"}
+              {isEditMode ? "Update" : "Add"}
             </Button>
           </Box>
         </DialogContent>
       </Dialog>
 
-      {/* Delete Confirmation Dialog */}
+      {/* Delete Confirmation */}
       <Dialog
         open={isDeleteDialogOpen}
         onClose={() => setDeleteDialogOpen(false)}
         PaperProps={{
-          sx: { padding: 3, borderRadius: 3, maxWidth: 400, margin: "auto" },
+          sx: { padding: 3, borderRadius: 3, maxWidth: 400 },
         }}
       >
-        <DialogTitle
-          sx={{ fontWeight: "bold", textAlign: "center", color: "error.main" }}
-        >
+        <DialogTitle sx={{ color: theme.palette.error.main }}>
           Confirm Deletion
         </DialogTitle>
-        <Divider sx={{ marginY: 2 }} />
+        <Divider />
         <DialogContent>
-          <Typography sx={{ textAlign: "center", marginBottom: 3 }}>
+          <Typography textAlign="center" mb={3}>
             Are you sure you want to delete
             <strong> {categoryToDelete?.name} </strong>?
           </Typography>
           <Box display="flex" justifyContent="space-between">
             <Button
               variant="outlined"
-              color="secondary"
               onClick={() => setDeleteDialogOpen(false)}
-              sx={{ paddingX: 3, borderRadius: 2 }}
             >
               Cancel
             </Button>
@@ -262,7 +268,6 @@ const Category = () => {
               variant="contained"
               color="error"
               onClick={handleDeleteCategory}
-              sx={{ paddingX: 3, borderRadius: 2 }}
             >
               Delete
             </Button>

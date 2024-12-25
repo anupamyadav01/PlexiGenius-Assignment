@@ -1,9 +1,15 @@
-import { Button } from "@mui/material";
+import { Box, Button } from "@mui/material";
 import { Logout } from "@mui/icons-material";
 
 const Dashboard = () => {
   return (
-    <div className="h-full bg-gray-100">
+    <Box
+      p={3}
+      sx={{
+        background: "linear-gradient(135deg, #f5f7fa, #c3cfe2)",
+        minHeight: "100vh",
+      }}
+    >
       {/* Navbar */}
       <nav className="flex justify-between items-center h-16 px-6 bg-white text-black shadow-lg">
         {/* Logo */}
@@ -160,7 +166,7 @@ const Dashboard = () => {
           </div>
         </div>
       </div>
-    </div>
+    </Box>
   );
 };
 

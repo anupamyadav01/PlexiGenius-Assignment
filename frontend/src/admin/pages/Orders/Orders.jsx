@@ -91,8 +91,6 @@ const OrderManagement = () => {
       field: "status",
       headerName: "Order Status",
       width: 200,
-      display: "flex",
-
       renderCell: (params) => (
         <Typography
           sx={{
@@ -154,8 +152,18 @@ const OrderManagement = () => {
   ];
 
   return (
-    <Box p={3}>
-      <Typography variant="h4" gutterBottom>
+    <Box
+      p={3}
+      sx={{
+        background: "linear-gradient(135deg, #f0f4f7, #d9e8fc)",
+        minHeight: "100vh",
+      }}
+    >
+      <Typography
+        variant="h4"
+        gutterBottom
+        sx={{ fontWeight: "bold", color: "#3f51b5" }}
+      >
         Order Management
       </Typography>
 
@@ -163,7 +171,10 @@ const OrderManagement = () => {
         sx={{
           height: 500,
           width: "100%",
-          "& .MuiDataGrid-root": { border: "none" },
+          backgroundColor: "#fff",
+          borderRadius: "8px",
+          boxShadow: "0 4px 8px rgba(0, 0, 0, 0.1)",
+          overflow: "hidden",
         }}
       >
         <DataGrid
@@ -173,9 +184,13 @@ const OrderManagement = () => {
           rowsPerPageOptions={[5, 10, 20]}
           sx={{
             "& .MuiDataGrid-columnHeaders": {
-              backgroundColor: "#f5f5f5",
+              backgroundColor: "#3f51b5",
+              color: "#fff",
               fontWeight: "bold",
               fontSize: "16px",
+            },
+            "& .MuiDataGrid-cell": {
+              fontSize: "14px",
             },
           }}
         />
@@ -187,22 +202,35 @@ const OrderManagement = () => {
         maxWidth="sm"
         fullWidth
       >
-        <DialogContent>
+        <DialogContent
+          sx={{
+            backgroundColor: "#f0f4f7",
+            borderRadius: "8px",
+            boxShadow: "0 2px 4px rgba(0, 0, 0, 0.1)",
+          }}
+        >
           {selectedOrder && (
             <>
-              <Typography variant="h6" gutterBottom textAlign="center">
+              <Typography
+                variant="h6"
+                gutterBottom
+                sx={{ textAlign: "center", fontWeight: "bold" }}
+              >
                 Order Timeline for {selectedOrder?.orderId}
               </Typography>
               <Timeline
                 sx={{
-                  paddingLeft: 0, // Removes extra left padding
-                  marginLeft: 0, // Removes extra left margin
+                  paddingLeft: 0,
+                  marginLeft: 0,
+                  "& .MuiTimelineDot-root": {
+                    backgroundColor: "#3f51b5",
+                  },
                 }}
               >
                 {selectedOrder.timeline.map((event, index) => (
                   <TimelineItem key={index}>
                     <TimelineSeparator>
-                      <TimelineDot color="primary" />
+                      <TimelineDot />
                       {index < selectedOrder.timeline.length - 1 && (
                         <TimelineConnector />
                       )}
@@ -226,6 +254,7 @@ const OrderManagement = () => {
                   onClick={handleDetailsClose}
                   variant="contained"
                   color="secondary"
+                  sx={{ mt: 2 }}
                 >
                   Close
                 </Button>
