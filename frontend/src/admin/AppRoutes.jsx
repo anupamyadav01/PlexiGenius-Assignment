@@ -8,7 +8,6 @@ import Register from "../user/pages/Register.jsx";
 import Login from "../user/pages/Login.jsx";
 
 const isAuthenticated = () => {
-  // Logic to check user authentication (e.g., check localStorage, cookies, or context)
   return localStorage.getItem("userToken") !== null;
 };
 

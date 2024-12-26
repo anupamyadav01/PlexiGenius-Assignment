@@ -6,6 +6,7 @@ import morgan from "morgan";
 import { connectToDB } from "./services/connectToDB.js";
 import { categoriesRoute } from "./routes/categoriesRoutes.js";
 import { productRouter } from "./routes/productRoutes.js";
+import { userRoutes } from "./routes/userRoutes.js";
 
 dotenv.config();
 const PORT = process.env.PORT || 10001;
@@ -18,6 +19,7 @@ app.use(cors());
 
 app.use("/api/categories", categoriesRoute);
 app.use("/api/products", productRouter);
+app.use("/api/users", userRoutes);
 
 connectToDB();
 
