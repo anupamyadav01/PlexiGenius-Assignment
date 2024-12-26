@@ -1,20 +1,13 @@
-import { useState } from "react";
-import {
-  Box,
-  Button,
-  Dialog,
-  DialogContent,
-  DialogTitle,
-  TextField,
-  MenuItem,
-  Typography,
-  DialogActions,
-} from "@mui/material";
+import { useEffect, useState } from "react";
+import { Box, Button, Typography } from "@mui/material";
 import { DataGrid } from "@mui/x-data-grid";
 import AddIcon from "@mui/icons-material/Add";
 import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/Delete";
-import WarningIcon from "@mui/icons-material/Warning";
+import axiosInstance from "../../../../axiosConfig";
+import DeleteDialog from "../../components/DeleteDialog";
+import EditProductDialog from "../../components/EditProductDialog";
+import AddProductDialog from "../../components/AddProductDialog";
 
 const Products = () => {
   const [products, setProducts] = useState([]);
@@ -53,25 +46,48 @@ const Products = () => {
     }
   };
 
-  const handleAddProduct = () => {
-    setProducts((prev) => [...prev, newProduct]);
-    setDialogOpen(false);
-    resetForm();
+  const handleAddProduct = async () => {
+    try {
+      setProducts((prev) => [...prev, newProduct]);
+      await axiosInstance.post("/products/addProduct", newProduct);
+      setDialogOpen(false);
+      resetForm();
+    } catch (error) {
+      console.error("Error adding product:", error);
+    }
+  };
+  const handleEditProduct = async () => {
+    try {
+      // const productId = products[selectedProductIndex]._id;
+      const response = await axiosInstance.put(
+        `/products/editProduct/${selectedProductIndex}`,
+        newProduct
+      );
+      setProducts((prev) =>
+        prev.map((product) =>
+          product._id === selectedProductIndex ? response?.data : product
+        )
+      );
+      setEditDialogOpen(false);
+      resetForm();
+    } catch (error) {
+      console.error("Error editing product:", error);
+    }
   };
 
-  const handleEditProduct = () => {
-    const updatedProducts = [...products];
-    updatedProducts[selectedProductIndex] = newProduct;
-    setProducts(updatedProducts);
-    setEditDialogOpen(false);
-    resetForm();
-  };
-
-  const handleDeleteProduct = () => {
-    setProducts((prev) =>
-      prev.filter((_, index) => index !== selectedProductIndex)
-    );
-    setDeleteDialogOpen(false);
+  const handleDeleteProduct = async () => {
+    try {
+      // const productId = products[selectedProductIndex]._id;
+      await axiosInstance.delete(
+        `/products/deleteProduct/${selectedProductIndex}`
+      );
+      setProducts((prev) =>
+        prev.filter((product) => product._id !== selectedProductIndex)
+      );
+      setDeleteDialogOpen(false);
+    } catch (error) {
+      console.error("Error deleting product:", error);
+    }
   };
 
   const resetForm = () => {
@@ -87,11 +103,14 @@ const Products = () => {
 
   const handleEditClick = (index) => {
     setSelectedProductIndex(index);
-    setNewProduct(products[index]);
+    const selectedProduct = products.find((product) => product._id === index);
+    setNewProduct(selectedProduct);
     setEditDialogOpen(true);
   };
 
-  const handleDeleteClick = (index) => {
+  console.log(newProduct);
+
+  const handleDeleteClick = async (index) => {
     setSelectedProductIndex(index);
     setDeleteDialogOpen(true);
   };
@@ -160,6 +179,21 @@ const Products = () => {
     },
   ];
 
+  console.log("Products:", products);
+
+  const fetchProducts = async () => {
+    try {
+      const response = await axiosInstance.get("/products/showAllProducts");
+      setProducts(response.data);
+    } catch (error) {
+      console.error("Error fetching products:", error);
+    }
+  };
+
+  useEffect(() => {
+    fetchProducts();
+  }, []);
+
   return (
     <Box
       p={3}
@@ -216,470 +250,42 @@ const Products = () => {
         }}
       >
         <DataGrid
-          rows={products.map((product, index) => ({ id: index, ...product }))}
+          rows={products?.map((product) => ({ id: product?._id, ...product }))}
           columns={columns}
           pageSize={5}
           rowsPerPageOptions={[5, 10, 20]}
         />
       </Box>
       {/* Add Product Dialog */}
-      <Dialog
-        open={isDialogOpen}
-        onClose={() => setDialogOpen(false)}
-        fullWidth
-        maxWidth="sm"
-        sx={{
-          "& .MuiDialog-paper": {
-            borderRadius: 4,
-            boxShadow: "0 4px 20px rgba(0, 0, 0, 0.2)",
-          },
-        }}
-      >
-        <DialogTitle sx={{ textAlign: "center", fontWeight: "bold", pb: 0 }}>
-          Add a New Product
-        </DialogTitle>
-        <DialogContent
-          sx={{
-            mt: 2,
-            display: "flex",
-            flexDirection: "column",
-            gap: 3,
-          }}
-        >
-          <Box
-            component="form"
-            sx={{
-              display: "flex",
-              flexDirection: "column",
-              gap: 2,
-            }}
-          >
-            {/* Category Selection */}
-            <TextField
-              select
-              name="category"
-              label="Category"
-              value={newProduct.category}
-              onChange={handleInputChange}
-              fullWidth
-              required
-              variant="outlined"
-              sx={{
-                "& .MuiInputBase-root": {
-                  borderRadius: 2,
-                },
-              }}
-            >
-              {categories.map((category, idx) => (
-                <MenuItem key={idx} value={category}>
-                  {category}
-                </MenuItem>
-              ))}
-            </TextField>
-
-            {/* Product Name */}
-            <TextField
-              name="name"
-              label="Product Name"
-              value={newProduct.name}
-              onChange={handleInputChange}
-              fullWidth
-              required
-              variant="outlined"
-            />
-
-            {/* Upload Image */}
-            <Box
-              sx={{
-                display: "flex",
-                flexDirection: "column",
-                gap: 1,
-                alignItems: "flex-start",
-              }}
-            >
-              <Button
-                variant="contained"
-                component="label"
-                sx={{
-                  backgroundImage:
-                    "linear-gradient(to right, #6a11cb, #2575fc)",
-                  color: "#fff",
-                  "&:hover": {
-                    backgroundImage:
-                      "linear-gradient(to right, #5a10ab, #1d63d4)",
-                  },
-                }}
-              >
-                Upload Image
-                <input type="file" hidden onChange={handleFileChange} />
-              </Button>
-              {newProduct.image && (
-                <img
-                  src={newProduct.image}
-                  alt="Preview"
-                  style={{
-                    width: 120,
-                    height: 120,
-                    borderRadius: 8,
-                    objectFit: "cover",
-                    marginTop: 8,
-                  }}
-                />
-              )}
-            </Box>
-
-            {/* Product Description */}
-            <TextField
-              name="description"
-              label="Product Description"
-              value={newProduct.description}
-              onChange={handleInputChange}
-              fullWidth
-              multiline
-              rows={3}
-              required
-              variant="outlined"
-            />
-
-            {/* Product Price */}
-            <TextField
-              name="price"
-              label="Product Price ($)"
-              type="number"
-              value={newProduct.price}
-              onChange={handleInputChange}
-              fullWidth
-              required
-              variant="outlined"
-            />
-
-            {/* Status */}
-            <TextField
-              select
-              name="status"
-              label="Status"
-              value={newProduct.status}
-              onChange={handleInputChange}
-              fullWidth
-              required
-              variant="outlined"
-              sx={{
-                "& .MuiInputBase-root": {
-                  borderRadius: 2,
-                },
-              }}
-            >
-              <MenuItem value="Available">Available</MenuItem>
-              <MenuItem value="Not Available">Not Available</MenuItem>
-            </TextField>
-          </Box>
-        </DialogContent>
-        <DialogActions
-          sx={{
-            justifyContent: "space-between",
-            px: 3,
-            py: 2,
-            background: "#f9f9f9",
-          }}
-        >
-          <Button
-            onClick={() => setDialogOpen(false)}
-            variant="outlined"
-            color="secondary"
-            sx={{
-              borderRadius: 2,
-              borderColor: "#c2c2c2",
-              "&:hover": {
-                borderColor: "#9e9e9e",
-              },
-            }}
-          >
-            Cancel
-          </Button>
-          <Button
-            onClick={handleAddProduct}
-            variant="contained"
-            sx={{
-              backgroundImage: "linear-gradient(to right, #ff7e5f, #feb47b)",
-              color: "#fff",
-              borderRadius: 2,
-              "&:hover": {
-                backgroundImage: "linear-gradient(to right, #ff6b6b, #ff9e57)",
-              },
-            }}
-          >
-            Save
-          </Button>
-        </DialogActions>
-      </Dialog>
+      <AddProductDialog
+        isDialogOpen={isDialogOpen}
+        setDialogOpen={setDialogOpen}
+        newProduct={newProduct}
+        handleAddProduct={handleAddProduct}
+        handleFileChange={handleFileChange}
+        handleInputChange={handleInputChange}
+        categories={categories}
+      />
 
       {/* Edit Product Dialog */}
-      <Dialog
-        open={isEditDialogOpen}
-        onClose={() => setEditDialogOpen(false)}
-        fullWidth
-        maxWidth="sm"
-        sx={{
-          "& .MuiDialog-paper": {
-            borderRadius: 4,
-            boxShadow: "0 4px 20px rgba(0, 0, 0, 0.2)",
-          },
-        }}
-      >
-        <DialogTitle sx={{ textAlign: "center", fontWeight: "bold", pb: 0 }}>
-          Edit Product
-        </DialogTitle>
-        <DialogContent
-          sx={{
-            mt: 2,
-            display: "flex",
-            flexDirection: "column",
-            gap: 3,
-          }}
-        >
-          <Box
-            component="form"
-            sx={{
-              display: "flex",
-              flexDirection: "column",
-              gap: 2,
-            }}
-          >
-            {/* Category Field */}
-            <TextField
-              select
-              name="category"
-              label="Category"
-              value={newProduct.category}
-              onChange={handleInputChange}
-              fullWidth
-              required
-              variant="outlined"
-              sx={{
-                "& .MuiInputBase-root": {
-                  borderRadius: 2,
-                },
-              }}
-            >
-              {categories.map((category, idx) => (
-                <MenuItem key={idx} value={category}>
-                  {category}
-                </MenuItem>
-              ))}
-            </TextField>
 
-            {/* Product Name */}
-            <TextField
-              name="name"
-              label="Product Name"
-              value={newProduct.name}
-              onChange={handleInputChange}
-              fullWidth
-              required
-              variant="outlined"
-            />
-
-            {/* Upload Image */}
-            <Box
-              sx={{
-                display: "flex",
-                flexDirection: "column",
-                gap: 1,
-                alignItems: "flex-start",
-              }}
-            >
-              <Button
-                variant="contained"
-                component="label"
-                sx={{
-                  backgroundImage:
-                    "linear-gradient(to right, #6a11cb, #2575fc)",
-                  color: "#fff",
-                  "&:hover": {
-                    backgroundImage:
-                      "linear-gradient(to right, #5a10ab, #1d63d4)",
-                  },
-                }}
-              >
-                Upload Image
-                <input type="file" hidden onChange={handleFileChange} />
-              </Button>
-              {newProduct.image && (
-                <img
-                  src={newProduct.image}
-                  alt="Preview"
-                  style={{
-                    width: 120,
-                    height: 120,
-                    borderRadius: 8,
-                    objectFit: "cover",
-                    marginTop: 8,
-                  }}
-                />
-              )}
-            </Box>
-
-            {/* Product Description */}
-            <TextField
-              name="description"
-              label="Product Description"
-              value={newProduct.description}
-              onChange={handleInputChange}
-              fullWidth
-              multiline
-              rows={3}
-              required
-              variant="outlined"
-            />
-
-            {/* Product Price */}
-            <TextField
-              name="price"
-              label="Product Price ($)"
-              type="number"
-              value={newProduct.price}
-              onChange={handleInputChange}
-              fullWidth
-              required
-              variant="outlined"
-            />
-
-            {/* Status Field */}
-            <TextField
-              select
-              name="status"
-              label="Status"
-              value={newProduct.status}
-              onChange={handleInputChange}
-              fullWidth
-              required
-              variant="outlined"
-              sx={{
-                "& .MuiInputBase-root": {
-                  borderRadius: 2,
-                },
-              }}
-            >
-              <MenuItem value="Available">Available</MenuItem>
-              <MenuItem value="Not Available">Not Available</MenuItem>
-            </TextField>
-          </Box>
-        </DialogContent>
-        <DialogActions
-          sx={{
-            justifyContent: "space-between",
-            px: 3,
-            py: 2,
-            background: "#f9f9f9",
-          }}
-        >
-          <Button
-            onClick={() => setEditDialogOpen(false)}
-            variant="outlined"
-            color="secondary"
-            sx={{
-              borderRadius: 2,
-              borderColor: "#c2c2c2",
-              "&:hover": {
-                borderColor: "#9e9e9e",
-              },
-            }}
-          >
-            Cancel
-          </Button>
-          <Button
-            onClick={handleEditProduct}
-            variant="contained"
-            sx={{
-              backgroundImage: "linear-gradient(to right, #ff7e5f, #feb47b)",
-              color: "#fff",
-              borderRadius: 2,
-              "&:hover": {
-                backgroundImage: "linear-gradient(to right, #ff6b6b, #ff9e57)",
-              },
-            }}
-          >
-            Save
-          </Button>
-        </DialogActions>
-      </Dialog>
+      <EditProductDialog
+        isEditDialogOpen={isEditDialogOpen}
+        setEditDialogOpen={setEditDialogOpen}
+        categories={categories}
+        newProduct={newProduct}
+        handleInputChange={handleInputChange}
+        handleFileChange={handleFileChange}
+        handleEditProduct={handleEditProduct}
+      />
 
       {/* Delete Confirmation Dialog */}
-      <Dialog
-        open={isDeleteDialogOpen}
-        onClose={() => setDeleteDialogOpen(false)}
-        fullWidth
-        maxWidth="xs"
-        sx={{
-          "& .MuiDialog-paper": {
-            borderRadius: 4,
-            padding: 3,
-            boxShadow: "0 4px 15px rgba(0, 0, 0, 0.2)",
-          },
-        }}
-      >
-        <DialogTitle sx={{ textAlign: "center", pb: 1 }}>
-          <Box
-            display="flex"
-            alignItems="center"
-            justifyContent="center"
-            gap={1}
-          >
-            <WarningIcon color="error" fontSize="large" />
-            <Typography variant="h6" color="error" fontWeight="bold">
-              Confirm Deletion
-            </Typography>
-          </Box>
-        </DialogTitle>
-        <DialogContent
-          sx={{
-            textAlign: "center",
-            mt: 2,
-          }}
-        >
-          <Typography variant="body1" color="text.secondary">
-            Are you sure you want to delete this product? This action cannot be
-            undone.
-          </Typography>
-        </DialogContent>
-        <DialogActions
-          sx={{
-            display: "flex",
-            justifyContent: "space-between",
-            mt: 2,
-          }}
-        >
-          <Button
-            onClick={handleDeleteProduct}
-            variant="contained"
-            color="error"
-            sx={{
-              backgroundImage: "linear-gradient(to right, #ff6b6b, #ff1e1e)",
-              color: "#fff",
-              "&:hover": {
-                backgroundImage: "linear-gradient(to right, #e64545, #d61515)",
-              },
-              borderRadius: 2,
-            }}
-          >
-            Delete
-          </Button>
-          <Button
-            onClick={() => setDeleteDialogOpen(false)}
-            variant="outlined"
-            color="secondary"
-            sx={{
-              borderRadius: 2,
-              borderColor: "#bdbdbd",
-              "&:hover": {
-                borderColor: "#9e9e9e",
-              },
-            }}
-          >
-            Cancel
-          </Button>
-        </DialogActions>
-      </Dialog>
+
+      <DeleteDialog
+        isDeleteDialogOpen={isDeleteDialogOpen}
+        setDeleteDialogOpen={setDeleteDialogOpen}
+        handleDeleteProduct={handleDeleteProduct}
+      />
     </Box>
   );
 };

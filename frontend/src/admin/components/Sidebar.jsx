@@ -3,7 +3,7 @@ import { Home, Inventory, ShoppingCart } from "@mui/icons-material";
 import { Link } from "react-router-dom";
 
 const Sidebar = () => {
-  const [active, setActive] = useState("Dashboard"); // Track the active menu item
+  const [active, setActive] = useState("Dashboard");
   const [open, setOpen] = useState(false);
 
   const handleClick = (menuItem) => {
@@ -19,7 +19,7 @@ const Sidebar = () => {
     <div className="w-[20%] h-screen bg-[#202d31] text-white shadow-lg flex flex-col">
       <ul className="flex-1 space-y-2">
         <Link
-          to="/"
+          to="/admin/dashboard"
           onClick={() => handleClick("Dashboard")}
           className={`group flex items-center space-x-4 py-5 px-6 rounded cursor-pointer transition-all duration-300 ${
             active === "Dashboard"
@@ -32,7 +32,7 @@ const Sidebar = () => {
         </Link>
 
         <Link
-          to="/categories"
+          to="/admin/categories"
           onClick={() => handleClick("Categories")}
           className={`group flex items-center space-x-4 py-5 px-6 rounded cursor-pointer transition-all duration-300 ${
             active === "Categories"
@@ -45,7 +45,7 @@ const Sidebar = () => {
         </Link>
 
         <Link
-          to="/products"
+          to="/admin/products"
           onClick={() => handleClick("Products")}
           className={`group flex items-center space-x-4 py-5 px-6 rounded cursor-pointer transition-all duration-300 ${
             active === "Products"
@@ -58,7 +58,7 @@ const Sidebar = () => {
         </Link>
 
         <Link
-          to="/customers"
+          to="/admin/customers"
           onClick={() => handleClick("Customers")}
           className={`group flex items-center space-x-4 py-5 px-6 rounded cursor-pointer transition-all duration-300 ${
             active === "Customers"
@@ -71,7 +71,7 @@ const Sidebar = () => {
         </Link>
 
         <Link
-          to="/orders"
+          to="/admin/orders"
           onClick={() => handleClick("Orders")}
           className={`group flex items-center space-x-4 py-5 px-6 rounded cursor-pointer transition-all duration-300 ${
             active === "Orders"

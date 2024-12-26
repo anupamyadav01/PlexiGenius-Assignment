@@ -1,6 +1,10 @@
 import { useState } from "react";
+import axiosInstance from "../../../axiosConfig";
+import toast, { Toaster } from "react-hot-toast";
+import { useNavigate } from "react-router-dom";
 
 export default function LoginForm() {
+  const navigate = useNavigate();
   const [formData, setFormData] = useState({
     email: "",
     password: "",
@@ -13,10 +17,23 @@ export default function LoginForm() {
     setFormData({ ...formData, [name]: value });
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log("Login Data Submitted: ", formData);
-    // Add API call or logic for logging in the user
+    try {
+      const response = await axiosInstance.post("/auth/login", formData);
+      if (response.status === 200) {
+        toast.success("Logged in successfully");
+      }
+      setTimeout(() => {
+        navigate("/");
+      }, 2000);
+    } catch (error) {
+      console.log(error);
+      toast.error("Invalid credentials", {
+        duration: 4000,
+        position: "top-right",
+      });
+    }
   };
 
   const togglePasswordVisibility = () => {
@@ -92,6 +109,7 @@ export default function LoginForm() {
           </a>
         </p>
       </div>
+      <Toaster position="top-right" />
     </div>
   );
 }

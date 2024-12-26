@@ -73,21 +73,18 @@ export const loginUser = async (req, res) => {
   }
 };
 
-export const logoutUser = async (req, res) => {
-  const { id } = req.body;
-
+export const isLoggedIn = async (req, res) => {
   try {
-    const newId = new mongoose.Types.ObjectId(id);
-    if (!newId) {
-      return res.status(400).json({ message: "User ID is required." });
-    }
-    const existingUser = await UserModel.findById(newId);
-    if (!existingUser) {
-      return res
-        .status(404)
-        .json({ message: "Invalid user or already logged out." });
-    }
+    const user = req.user;
+    return res.status(200).json({ user });
+  } catch (error) {
+    console.error("Error in isLoggedIn: ", error);
+    return res.status(500).json({ message: "Internal server error." });
+  }
+};
 
+export const logoutUser = async (req, res) => {
+  try {
     res.clearCookie("token", {
       path: "/",
       httpOnly: true,

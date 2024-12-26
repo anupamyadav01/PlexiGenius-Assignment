@@ -16,7 +16,7 @@ import TimelineConnector from "@mui/lab/TimelineConnector";
 import TimelineContent from "@mui/lab/TimelineContent";
 import TimelineDot from "@mui/lab/TimelineDot";
 
-const OrderManagement = () => {
+const Orders = () => {
   const [orders, setOrders] = useState([
     {
       id: 1,
@@ -266,4 +266,4 @@ const OrderManagement = () => {
   );
 };
 
-export default OrderManagement;
+export default Orders;

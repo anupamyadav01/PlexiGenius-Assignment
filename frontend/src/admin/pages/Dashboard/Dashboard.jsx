@@ -1,7 +1,20 @@
 import { Box, Button } from "@mui/material";
 import { Logout } from "@mui/icons-material";
+import axiosInstance from "../../../../axiosConfig";
 
 const Dashboard = () => {
+  const handleLogout = async () => {
+    try {
+      const response = await axiosInstance.post("/auth/logout");
+      if (response.status === 200) {
+        localStorage.removeItem("userRole");
+        window.location.href = "/login";
+      }
+      console.log(response);
+    } catch (error) {
+      console.log(error);
+    }
+  };
   return (
     <Box
       p={3}
@@ -21,10 +34,12 @@ const Dashboard = () => {
         <div className="flex items-center space-x-4">
           {/* Signout Button */}
           <Button
+            onClick={handleLogout}
             variant="contained"
             color="error"
             startIcon={<Logout />}
             className="capitalize"
+            sale
           >
             Sign Out
           </Button>

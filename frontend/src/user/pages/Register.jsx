@@ -1,6 +1,10 @@
 import { useState } from "react";
+import axiosInstance from "../../../axiosConfig";
+import toast, { Toaster } from "react-hot-toast";
+import { useNavigate } from "react-router-dom";
 
 export default function RegisterForm() {
+  const navigate = useNavigate();
   const [formData, setFormData] = useState({
     name: "",
     email: "",
@@ -14,17 +18,28 @@ export default function RegisterForm() {
     const { name, value } = e.target;
     setFormData({ ...formData, [name]: value });
   };
-
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-
     if (formData.password !== formData.confPassword) {
       alert("Passwords do not match!");
       return;
     }
-
-    console.log("Form Data Submitted: ", formData);
-    // Add API call or logic for registering the user
+    try {
+      const response = await axiosInstance.post("/auth/register", formData);
+      console.log(response);
+      if (response.status === 201) {
+        toast.success(response?.data?.message);
+      }
+      setTimeout(() => {
+        navigate("/login");
+      }, 2000);
+    } catch (error) {
+      console.log(error);
+      toast.error(error?.response?.data?.message, {
+        duration: 4000,
+        position: "top-right",
+      });
+    }
   };
 
   const togglePasswordVisibility = () => {
@@ -136,6 +151,7 @@ export default function RegisterForm() {
           </a>
         </p>
       </div>
+      <Toaster position="top-right" />
     </div>
   );
 }

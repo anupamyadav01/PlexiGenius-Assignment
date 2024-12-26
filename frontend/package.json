@@ -21,9 +21,11 @@
     "@nivo/geo": "^0.88.0",
     "@nivo/pie": "^0.88.0",
     "@reduxjs/toolkit": "^2.5.0",
+    "axios": "^1.7.9",
     "react": "^18.3.1",
     "react-datepicker": "^7.5.0",
     "react-dom": "^18.3.1",
+    "react-hot-toast": "^2.4.1",
     "react-redux": "^9.2.0",
     "react-router-dom": "^7.1.1"
   },
