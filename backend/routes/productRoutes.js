@@ -1,6 +1,6 @@
 import express from "express";
 import {
-  createProduct,
+  addNewProduct,
   deleteProudct,
   editProduct,
   showAllProducts,
@@ -8,10 +8,10 @@ import {
 
 export const productRouter = express.Router();
 
-productRouter.post("/create", createProduct);
+productRouter.post("/addProduct", addNewProduct);
 
 productRouter.get("/showAllProducts", showAllProducts);
 
-productRouter.patch("/editProduct/:id", editProduct);
+productRouter.patch("/editProduct/:productId", editProduct);
 
-productRouter.delete("/deleteProduct/:id", deleteProudct);
+productRouter.delete("/deleteProduct/:productId", deleteProudct);
