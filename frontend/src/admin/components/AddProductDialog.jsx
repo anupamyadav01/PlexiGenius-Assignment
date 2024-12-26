@@ -172,7 +172,7 @@ const AddProductDialog = ({
       </DialogContent>
       <DialogActions
         sx={{
-          justifyContent: "space-between",
+          justifyContent: "center",
           px: 3,
           py: 2,
           background: "#f9f9f9",

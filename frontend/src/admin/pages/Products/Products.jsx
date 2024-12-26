@@ -48,8 +48,12 @@ const Products = () => {
 
   const handleAddProduct = async () => {
     try {
-      setProducts((prev) => [...prev, newProduct]);
-      await axiosInstance.post("/products/addProduct", newProduct);
+      const response = await axiosInstance.post(
+        "/products/addProduct",
+        newProduct
+      );
+      console.log(response);
+      setProducts((prev) => [...prev, response?.data?.product]);
       setDialogOpen(false);
       resetForm();
     } catch (error) {
@@ -59,13 +63,15 @@ const Products = () => {
   const handleEditProduct = async () => {
     try {
       // const productId = products[selectedProductIndex]._id;
-      const response = await axiosInstance.put(
+      const response = await axiosInstance.patch(
         `/products/editProduct/${selectedProductIndex}`,
         newProduct
       );
+      console.log(response);
+
       setProducts((prev) =>
         prev.map((product) =>
-          product._id === selectedProductIndex ? response?.data : product
+          product._id === selectedProductIndex ? newProduct : product
         )
       );
       setEditDialogOpen(false);
@@ -108,7 +114,7 @@ const Products = () => {
     setEditDialogOpen(true);
   };
 
-  console.log(newProduct);
+  console.log("New Product", newProduct);
 
   const handleDeleteClick = async (index) => {
     setSelectedProductIndex(index);
