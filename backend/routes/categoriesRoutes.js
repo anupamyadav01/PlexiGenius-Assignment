@@ -12,6 +12,6 @@ categoriesRoute.post("/addCategory", addCategory);
 
 categoriesRoute.get("/getCategories", getCategories);
 
-categoriesRoute.post("/editCategory", editCategory);
+categoriesRoute.put("/editCategory/:categoryId", editCategory);
 
-categoriesRoute.post("/deleteCategory", deleteCategory);
+categoriesRoute.delete("/deleteCategory/:categoryId", deleteCategory);

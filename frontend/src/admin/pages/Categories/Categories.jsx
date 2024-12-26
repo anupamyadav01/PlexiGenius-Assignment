@@ -1,33 +1,9 @@
-import { useState } from "react";
-import {
-  Box,
-  Button,
-  Dialog,
-  DialogContent,
-  DialogTitle,
-  TextField,
-  Typography,
-  IconButton,
-  Divider,
-  Tooltip,
-  useTheme,
-} from "@mui/material";
-import { DataGrid } from "@mui/x-data-grid";
-import AddIcon from "@mui/icons-material/Add";
-import EditIcon from "@mui/icons-material/Edit";
-import DeleteIcon from "@mui/icons-material/Delete";
-import CloseIcon from "@mui/icons-material/Close";
-
+import { useEffect, useState } from "react";
+import { FaEdit, FaTrashAlt } from "react-icons/fa";
+import toast, { Toaster } from "react-hot-toast";
+import axiosInstance from "../../../../axiosConfig";
 const Category = () => {
-  const theme = useTheme();
-
-  const [categories, setCategories] = useState([
-    { id: 1, name: "Electronics" },
-    { id: 2, name: "Clothing" },
-    { id: 3, name: "Books" },
-    { id: 4, name: "Home Appliances" },
-    { id: 5, name: "Sports Equipment" },
-  ]);
+  const [categories, setCategories] = useState([]);
 
   const [isDialogOpen, setDialogOpen] = useState(false);
   const [isEditMode, setEditMode] = useState(false);
@@ -36,24 +12,43 @@ const Category = () => {
   const [isDeleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [categoryToDelete, setCategoryToDelete] = useState(null);
 
-  const handleAddCategory = () => {
+  const handleAddOrEditCategory = async () => {
     if (!categoryName.trim()) return;
 
-    if (isEditMode) {
-      setCategories((prev) =>
-        prev.map((cat) =>
-          cat.id === selectedCategory.id
-            ? { ...cat, name: categoryName.trim() }
-            : cat
-        )
-      );
-    } else {
-      const newCategory = {
-        id: categories.length ? categories[categories.length - 1].id + 1 : 1,
-        name: categoryName.trim(),
-      };
-      setCategories((prev) => [...prev, newCategory]);
+    try {
+      if (isEditMode) {
+        // Update category via API
+        const response = await axiosInstance.put(
+          `/categories/editCategory/${selectedCategory._id}`,
+          { name: categoryName.trim() }
+        );
+
+        if (response.status === 200) {
+          setCategories((prev) =>
+            prev.map((cat) =>
+              cat._id === selectedCategory._id
+                ? { ...cat, name: categoryName.trim() }
+                : cat
+            )
+          );
+          toast.success("Category updated successfully!");
+        }
+      } else {
+        // Add new category via API
+        const response = await axiosInstance.post("/categories/addCategory", {
+          name: categoryName.trim(),
+        });
+
+        if (response.status === 201) {
+          setCategories((prev) => [...prev, response.data.category]);
+          toast.success("Category added successfully!");
+        }
+      }
+    } catch (error) {
+      console.error(error);
+      toast.error("Something went wrong!");
     }
+
     handleCloseDialog();
   };
 
@@ -64,10 +59,24 @@ const Category = () => {
     setDialogOpen(true);
   };
 
-  const handleDeleteCategory = () => {
+  const handleDeleteCategory = async () => {
+    // console.log(categoryToDelete);
+
     setCategories((prev) =>
-      prev.filter((category) => category.id !== categoryToDelete.id)
+      prev.filter((category) => category._id !== categoryToDelete._id)
     );
+    try {
+      const response = await axiosInstance.delete(
+        `/categories/deleteCategory/${categoryToDelete?._id}`
+      );
+
+      // console.log(response);
+      if (response.status === 200) {
+        toast.success(response?.data?.message);
+      }
+    } catch (error) {
+      console.log(error);
+    }
     setDeleteDialogOpen(false);
   };
 
@@ -83,197 +92,136 @@ const Category = () => {
     setCategoryName("");
   };
 
-  const columns = [
-    {
-      field: "name",
-      headerName: "Category Name",
-      flex: 1,
-      headerAlign: "center",
-      align: "center",
-      sortable: true,
-    },
-    {
-      field: "actions",
-      headerName: "Actions",
-      width: 180,
-      headerAlign: "center",
-      renderCell: (params) => (
-        <Box display="flex" justifyContent="center" gap={1}>
-          <Tooltip title="Edit">
-            <IconButton
-              onClick={() => handleEditCategory(params.row)}
-              sx={{
-                color: theme.palette.primary.main,
-                backgroundColor: theme.palette.action.hover,
-                "&:hover": {
-                  backgroundColor: theme.palette.action.selected,
-                },
-              }}
-            >
-              <EditIcon />
-            </IconButton>
-          </Tooltip>
-          <Tooltip title="Delete">
-            <IconButton
-              onClick={() => handleOpenDeleteDialog(params.row)}
-              sx={{
-                color: theme.palette.error.main,
-                backgroundColor: theme.palette.action.hover,
-                "&:hover": {
-                  backgroundColor: theme.palette.error.light,
-                },
-              }}
-            >
-              <DeleteIcon />
-            </IconButton>
-          </Tooltip>
-        </Box>
-      ),
-    },
-  ];
+  useEffect(() => {
+    const getAllCategories = async () => {
+      try {
+        const response = await axiosInstance.get("/categories/getCategories");
+        console.log(response?.data?.categories);
+        setCategories(response?.data?.categories);
+      } catch (error) {
+        console.log(error);
+      }
+    };
+
+    getAllCategories();
+  }, []);
 
   return (
-    <Box
-      p={3}
-      sx={{
-        background: "linear-gradient(135deg, #f5f7fa, #c3cfe2)",
-        minHeight: "100vh",
-      }}
-    >
+    <div className="p-6 bg-gradient-to-tr from-gray-100 to-gray-300 min-h-screen">
       {/* Header */}
-      <Box
-        display="flex"
-        justifyContent="space-between"
-        alignItems="center"
-        mb={4}
-      >
-        <Typography
-          variant="h4"
-          sx={{
-            fontWeight: "bold",
-            textTransform: "uppercase",
-          }}
-        >
-          Category Management
-        </Typography>
-        <Button
-          variant="contained"
-          color="primary"
-          startIcon={<AddIcon />}
+      <Toaster position="top-right" />
+      <div className="flex justify-between items-center mb-6">
+        <h1 className="text-2xl font-bold uppercase">Category Management</h1>
+        <button
+          className="bg-blue-500 text-white px-4 py-2 rounded shadow hover:bg-blue-600"
           onClick={() => setDialogOpen(true)}
-          sx={{ paddingX: 3, borderRadius: 2 }}
         >
           Add Category
-        </Button>
-      </Box>
+        </button>
+      </div>
 
-      {/* DataGrid */}
-      <Box
-        sx={{
-          height: 500,
-          backgroundColor: "white",
-          boxShadow: theme.shadows[4],
-          borderRadius: 2,
-        }}
-      >
-        <DataGrid
-          rows={categories}
-          columns={columns}
-          pageSize={5}
-          rowsPerPageOptions={[5, 10]}
-          disableSelectionOnClick
-          sx={{
-            "& .MuiDataGrid-cell": { textAlign: "center" },
-            "& .MuiDataGrid-columnHeaders": {
-              backgroundColor: theme.palette.primary.main,
-              textAlign: "center",
-              fontSize: "1.1rem",
-            },
-            "& .MuiDataGrid-row:hover": {
-              backgroundColor: theme.palette.action.hover,
-            },
-          }}
-        />
-      </Box>
+      {/* Table */}
+      <div className="bg-white shadow rounded overflow-hidden">
+        <table className="w-full text-center">
+          <thead className="bg-blue-500 text-white">
+            <tr>
+              <th className="py-2 px-4">Category Name</th>
+              <th className="py-2 px-4">Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            {categories?.map((category) => (
+              <tr
+                key={category?._id}
+                className="odd:bg-gray-100 even:bg-gray-200"
+              >
+                <td className="py-2 px-4">{category.name}</td>
+                <td className="py-2 px-4">
+                  <div className="flex justify-center space-x-4">
+                    <button
+                      className="flex items-center px-4 py-2 border border-blue-600 text-blue-600 hover:bg-blue-600 hover:text-white rounded-lg transition-all duration-300 shadow-md"
+                      onClick={() => handleEditCategory(category)}
+                    >
+                      <FaEdit className="mr-2" />
+                      <span className="text-sm">Edit</span>
+                    </button>
+                    <button
+                      className="flex items-center px-4 py-2 border border-red-600 text-red-600 hover:bg-red-600 hover:text-white rounded-lg transition-all duration-300 shadow-md"
+                      onClick={() => handleOpenDeleteDialog(category)}
+                    >
+                      <FaTrashAlt className="mr-2" />
+                      <span className="text-sm">Delete</span>
+                    </button>
+                  </div>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
 
       {/* Add/Edit Dialog */}
-      <Dialog
-        open={isDialogOpen}
-        onClose={handleCloseDialog}
-        PaperProps={{
-          sx: {
-            padding: 3,
-            borderRadius: 3,
-            maxWidth: 500,
-          },
-        }}
-      >
-        <DialogTitle>
-          {isEditMode ? "Edit Category" : "Add Category"}
-          <IconButton
-            onClick={handleCloseDialog}
-            sx={{ position: "absolute", top: 8, right: 8 }}
-          >
-            <CloseIcon />
-          </IconButton>
-        </DialogTitle>
-        <Divider />
-        <DialogContent>
-          <TextField
-            label="Category Name"
-            value={categoryName}
-            onChange={(e) => setCategoryName(e.target.value)}
-            fullWidth
-            sx={{ marginBottom: 3 }}
-          />
-          <Box display="flex" justifyContent="flex-end">
-            <Button
-              variant="contained"
-              color="primary"
-              onClick={handleAddCategory}
-              disabled={!categoryName.trim()}
-            >
-              {isEditMode ? "Update" : "Add"}
-            </Button>
-          </Box>
-        </DialogContent>
-      </Dialog>
+      {isDialogOpen && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center">
+          <div className="bg-white p-6 rounded shadow max-w-sm w-full">
+            <h2 className="text-xl font-bold mb-4">
+              {isEditMode ? "Edit Category" : "Add Category"}
+            </h2>
+            <input
+              type="text"
+              className="border p-2 w-full mb-4 rounded"
+              placeholder="Category Name"
+              value={categoryName}
+              onChange={(e) => setCategoryName(e.target.value)}
+            />
+            <div className="flex justify-end gap-2">
+              <button
+                className="px-4 py-2 bg-gray-200 rounded hover:bg-gray-300"
+                onClick={handleCloseDialog}
+              >
+                Cancel
+              </button>
+              <button
+                className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
+                onClick={handleAddOrEditCategory}
+                disabled={!categoryName.trim()}
+              >
+                {isEditMode ? "Update" : "Add"}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Delete Confirmation */}
-      <Dialog
-        open={isDeleteDialogOpen}
-        onClose={() => setDeleteDialogOpen(false)}
-        PaperProps={{
-          sx: { padding: 3, borderRadius: 3, maxWidth: 400 },
-        }}
-      >
-        <DialogTitle sx={{ color: theme.palette.error.main }}>
-          Confirm Deletion
-        </DialogTitle>
-        <Divider />
-        <DialogContent>
-          <Typography textAlign="center" mb={3}>
-            Are you sure you want to delete
-            <strong> {categoryToDelete?.name} </strong>?
-          </Typography>
-          <Box display="flex" justifyContent="space-between">
-            <Button
-              variant="outlined"
-              onClick={() => setDeleteDialogOpen(false)}
-            >
-              Cancel
-            </Button>
-            <Button
-              variant="contained"
-              color="error"
-              onClick={handleDeleteCategory}
-            >
-              Delete
-            </Button>
-          </Box>
-        </DialogContent>
-      </Dialog>
-    </Box>
+      {isDeleteDialogOpen && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center">
+          <div className="bg-white p-6 rounded shadow max-w-sm w-full">
+            <h2 className="text-xl font-bold text-red-500 mb-4">
+              Confirm Deletion
+            </h2>
+            <p className="mb-4 text-center">
+              Are you sure you want to delete{" "}
+              <strong>{categoryToDelete?.name}</strong>?
+            </p>
+            <div className="flex justify-center gap-5 mt-4">
+              <button
+                className="px-4 py-2 bg-gray-200 rounded hover:bg-gray-300"
+                onClick={() => setDeleteDialogOpen(false)}
+              >
+                Cancel
+              </button>
+              <button
+                className="px-4 py-2 bg-red-500 text-white rounded hover:bg-red-600"
+                onClick={handleDeleteCategory}
+              >
+                Delete
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+    </div>
   );
 };
 

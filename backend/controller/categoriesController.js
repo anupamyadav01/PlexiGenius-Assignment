@@ -44,16 +44,17 @@ export const getCategories = async (req, res) => {
 };
 
 export const editCategory = async (req, res) => {
-  const { id, name } = req.body;
+  const { name } = req.body;
+  const { categoryId } = req.params;
 
-  if (!id || !name) {
+  if (!categoryId || !name) {
     return res
       .status(400)
       .json({ message: "Category ID and name are required." });
   }
 
   try {
-    const existingCategory = await CategoriesModel.findById(id);
+    const existingCategory = await CategoriesModel.findById(categoryId);
 
     if (!existingCategory) {
       return res.status(404).json({ message: "Category not found." });
@@ -73,22 +74,26 @@ export const editCategory = async (req, res) => {
 };
 
 export const deleteCategory = async (req, res) => {
-  const { id } = req.body;
-
-  if (!id) {
-    return res.status(400).json({ message: "Category ID is required." });
-  }
+  const { categoryId } = req.params;
 
   try {
-    const existingCategory = await CategoriesModel.findById(id);
+    console.log(categoryId);
+
+    if (!categoryId) {
+      return res.status(400).json({ message: "Category ID is required." });
+    }
+
+    const existingCategory = await CategoriesModel.findById({
+      _id: categoryId,
+    });
 
     if (!existingCategory) {
       return res.status(404).json({ message: "Category not found." });
     }
 
-    await CategoriesModel.findByIdAndDelete(id);
+    await CategoriesModel.findByIdAndDelete(categoryId);
 
-    return res.status(200).json({ message: "Category removed successfully." });
+    return res.status(200).json({ message: "Category deleted successfully." });
   } catch (error) {
     console.error("Error in deleteCategory:", error);
     return res.status(500).json({ message: "Internal server message." });
