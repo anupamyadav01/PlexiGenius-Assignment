@@ -1,16 +1,32 @@
 import { FaTrashAlt } from "react-icons/fa";
 import { useContext } from "react";
 import { CartContext } from "../../App";
+import { v4 as generateUUID } from "uuid";
+import axiosInstance from "../../../axiosConfig";
 
 const CartPage = () => {
-  const { cartItems, setCartItems } = useContext(CartContext);
+  const { cartItems } = useContext(CartContext);
 
-  const onDelete = (id) => {};
+  const onDelete = () => {};
 
-  const onBuyNow = (id) => {
-    setTimeout(() => {
-      alert("Product Ordered Successfully!");
-    }, 1000);
+  const onBuyNow = async (productId) => {
+    const userName = JSON.parse(localStorage.getItem("user")).name;
+
+    const orderDetails = {
+      orderID: generateUUID(),
+      customerName: userName,
+      productId: productId,
+      quantity: 1,
+    };
+    try {
+      const response = await axiosInstance.post(
+        "/order/placeOrder",
+        orderDetails
+      );
+      console.log(response);
+    } catch (error) {
+      console.error("Error in onBuyNow: ", error);
+    }
   };
   return (
     <div className="p-6 bg-gray-50 min-h-screen">
@@ -30,7 +46,7 @@ const CartPage = () => {
           <tbody>
             {cartItems?.map((item) => (
               <tr
-                key={item.id}
+                key={item._id}
                 className="hover:bg-gray-50 transition text-center"
               >
                 <td className="p-4 border border-gray-300 flex items-center justify-center">
@@ -52,7 +68,7 @@ const CartPage = () => {
                 <td className="p-4 border border-gray-300 flex gap-4 justify-center items-center">
                   {/* Delete Icon */}
                   <button
-                    onClick={() => onDelete(item?.productId?.id)}
+                    onClick={() => onDelete(item?.productId?._id)}
                     className="flex items-center gap-2 bg-red-500 text-white px-4 py-2 rounded-lg shadow-md hover:bg-red-600 hover:shadow-lg transform transition-transform duration-300 hover:scale-105"
                   >
                     <FaTrashAlt size={18} />
@@ -61,7 +77,7 @@ const CartPage = () => {
 
                   {/* Buy Now Button */}
                   <button
-                    onClick={() => onBuyNow(item?.productId?.id)}
+                    onClick={() => onBuyNow(item?.productId?._id)}
                     className="bg-blue-500 text-white px-4 py-2 rounded-lg shadow-md hover:bg-blue-600 transition transform hover:scale-105"
                   >
                     Buy Now

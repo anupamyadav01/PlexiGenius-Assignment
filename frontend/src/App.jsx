@@ -24,6 +24,9 @@ const App = () => {
           const role = response?.data?.user?.role;
           setUserRole(role);
           localStorage.setItem("userRole", role);
+          console.log(response?.data?.user);
+
+          localStorage.setItem("user", JSON.stringify(response?.data?.user));
         } else {
           setUserRole("user");
         }
