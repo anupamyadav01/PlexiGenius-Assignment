@@ -8,6 +8,8 @@ import { categoriesRoute } from "./routes/categoriesRoutes.js";
 import { productRouter } from "./routes/productRoutes.js";
 import { authRoutes } from "./routes/authRoutes.js";
 import { generalRoutes } from "./routes/generalRoutes.js";
+import { cartRoutes } from "./routes/cartRoutes.js";
+import { orderRoutes } from "./routes/orderRoutes.js";
 
 dotenv.config();
 const PORT = process.env.PORT || 10001;
@@ -29,6 +31,8 @@ app.use("/api/categories", categoriesRoute);
 app.use("/api/products", productRouter);
 app.use("/api/auth", authRoutes);
 app.use("/api/general", generalRoutes);
+app.use("/api/cart", cartRoutes);
+app.use("/api/order", orderRoutes);
 
 connectToDB();
 

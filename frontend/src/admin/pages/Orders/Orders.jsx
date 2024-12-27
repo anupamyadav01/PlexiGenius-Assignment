@@ -40,12 +40,11 @@ const Orders = () => {
             },
           ],
         },
-        // Add more orders here if necessary for testing
       ]);
       setLoading(false);
-    }, 2000); // Simulate a 2-second loading time
+    }, 2000);
 
-    return () => clearTimeout(timer); // Clean up timer on unmount
+    return () => clearTimeout(timer);
   }, []);
 
   const handleDetailsOpen = (order) => {

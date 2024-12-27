@@ -1,13 +1,18 @@
 import { BrowserRouter, Routes, Route } from "react-router-dom";
-import { useEffect, useState } from "react";
+import { createContext, useEffect, useState } from "react";
 import axiosInstance from "../axiosConfig";
 import PageNotFound from "./user/pages/PageNotFound";
 import Home from "./user/pages/Home";
 import LoginForm from "./user/pages/Login";
 import RegisterForm from "./user/pages/Register";
 import Admin from "./admin/Admin";
+import Products from "./user/pages/Product";
+import Navbar from "./user/components/Navbar";
+import CartPage from "./user/pages/CartPage";
+export const CartContext = createContext(null);
 
 const App = () => {
+  const [cartItems, setCartItems] = useState([]);
   const [userRole, setUserRole] = useState(null);
   const [loading, setLoading] = useState(true); // Track loading state
 
@@ -53,13 +58,20 @@ const App = () => {
 
   return (
     <BrowserRouter>
-      <Routes>
-        <Route path="/login" element={<LoginForm />} />
-        <Route path="/register" element={<RegisterForm />} />
-        <Route path="/" element={<Home />} />
-        <Route path="*" element={<PageNotFound />} />
-        {userRole === "admin" && <Route path="/admin/*" element={<Admin />} />}
-      </Routes>
+      <CartContext.Provider value={{ cartItems, setCartItems }}>
+        <Navbar />
+        <Routes>
+          <Route path="/login" element={<LoginForm />} />
+          <Route path="/register" element={<RegisterForm />} />
+          <Route path="/" element={<Home />} />
+          <Route path="/products" element={<Products />} />
+          <Route path="/cart" element={<CartPage />} />
+          <Route path="*" element={<PageNotFound />} />
+          {userRole === "admin" && (
+            <Route path="/admin/*" element={<Admin />} />
+          )}
+        </Routes>
+      </CartContext.Provider>
     </BrowserRouter>
   );
 };
