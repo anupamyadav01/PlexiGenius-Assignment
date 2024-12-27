@@ -6,11 +6,8 @@ import Orders from "./pages/Orders/Orders";
 import Customer from "./pages/Customers/Customers";
 import Category from "./pages/Categories/Categories";
 import PageNotFound from "../user/pages/PageNotFound";
-import { createContext } from "react";
 
 const Admin = () => {
-  const ToggleContext = createContext();
-
   return (
     <div className="flex w-full h-full">
       <Sidebar />

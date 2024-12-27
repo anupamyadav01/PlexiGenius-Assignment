@@ -32,8 +32,14 @@ const App = () => {
 
   if (userRole === null) {
     return (
-      <div className="flex items-center justify-center h-screen">
-        <p>Loading...</p>
+      <div className="relative flex items-center justify-center h-screen bg-gray-200 overflow-hidden">
+        <div className="absolute inset-0 bg-black opacity-40 backdrop-blur-md"></div>
+
+        <div className="absolute inset-0 bg-gray-300 animate-pulse rounded-lg"></div>
+
+        <p className="relative text-white text-4xl font-semibold animate-jump">
+          Loading...
+        </p>
       </div>
     );
   }

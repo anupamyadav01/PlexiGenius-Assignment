@@ -1,13 +1,10 @@
 import { useEffect, useState } from "react";
-import { Box, Button, Typography } from "@mui/material";
-import { DataGrid } from "@mui/x-data-grid";
-import AddIcon from "@mui/icons-material/Add";
-import EditIcon from "@mui/icons-material/Edit";
-import DeleteIcon from "@mui/icons-material/Delete";
+import { Box } from "@mui/material";
+import { Edit, Delete } from "@mui/icons-material";
 import axiosInstance from "../../../../axiosConfig";
-import DeleteDialog from "../../components/DeleteDialog";
-import EditProductDialog from "../../components/EditProductDialog";
 import AddProductDialog from "../../components/AddProductDialog";
+import EditProductDialog from "../../components/EditProductDialog";
+import DeleteDialog from "../../components/DeleteDialog";
 
 const Products = () => {
   const [products, setProducts] = useState([]);
@@ -29,6 +26,18 @@ const Products = () => {
     category: "",
     status: "Available",
   });
+  const [loading, setLoading] = useState(true); // Loading state
+
+  const fetchProducts = async () => {
+    try {
+      const response = await axiosInstance.get("/products/showAllProducts");
+      setProducts(response.data);
+      setLoading(false); // Set loading to false once products are fetched
+    } catch (error) {
+      console.error("Error fetching products:", error);
+      setLoading(false); // Set loading to false on error
+    }
+  };
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -52,7 +61,6 @@ const Products = () => {
         "/products/addProduct",
         newProduct
       );
-      console.log(response);
       setProducts((prev) => [...prev, response?.data?.product]);
       setDialogOpen(false);
       resetForm();
@@ -60,15 +68,13 @@ const Products = () => {
       console.error("Error adding product:", error);
     }
   };
+
   const handleEditProduct = async () => {
     try {
-      // const productId = products[selectedProductIndex]._id;
-      const response = await axiosInstance.patch(
+      await axiosInstance.patch(
         `/products/editProduct/${selectedProductIndex}`,
         newProduct
       );
-      console.log(response);
-
       setProducts((prev) =>
         prev.map((product) =>
           product._id === selectedProductIndex ? newProduct : product
@@ -83,7 +89,6 @@ const Products = () => {
 
   const handleDeleteProduct = async () => {
     try {
-      // const productId = products[selectedProductIndex]._id;
       await axiosInstance.delete(
         `/products/deleteProduct/${selectedProductIndex}`
       );
@@ -114,86 +119,9 @@ const Products = () => {
     setEditDialogOpen(true);
   };
 
-  console.log("New Product", newProduct);
-
-  const handleDeleteClick = async (index) => {
+  const handleDeleteClick = (index) => {
     setSelectedProductIndex(index);
     setDeleteDialogOpen(true);
-  };
-
-  const columns = [
-    {
-      field: "image",
-      headerName: "Image",
-      width: 100,
-      renderCell: (params) => (
-        <img
-          src={params.value}
-          alt={params.row.name}
-          style={{
-            width: 50,
-            height: 50,
-            borderRadius: "50%",
-            border: "2px solid #ddd",
-          }}
-        />
-      ),
-    },
-    { field: "name", headerName: "Name", width: 200 },
-    { field: "description", headerName: "Description", width: 300 },
-    { field: "price", headerName: "Price ($)", width: 100 },
-    { field: "category", headerName: "Category", width: 150 },
-    { field: "status", headerName: "Status", width: 120 },
-    {
-      field: "actions",
-      headerName: "Actions",
-      width: 200,
-      renderCell: (params) => (
-        <Box display="flex" gap={1}>
-          <Button
-            variant="contained"
-            color="primary"
-            size="small"
-            startIcon={<EditIcon />}
-            onClick={() => handleEditClick(params.row.id)}
-            sx={{
-              backgroundImage: "linear-gradient(to right, #6a11cb, #2575fc)",
-              color: "#fff",
-            }}
-          >
-            Edit
-          </Button>
-          <Button
-            variant="outlined"
-            color="error"
-            size="small"
-            startIcon={<DeleteIcon />}
-            onClick={() => handleDeleteClick(params.row.id)}
-            sx={{
-              borderColor: "#ff616f",
-              color: "#ff616f",
-              "&:hover": {
-                borderColor: "#ff4a59",
-                color: "#ff4a59",
-              },
-            }}
-          >
-            Delete
-          </Button>
-        </Box>
-      ),
-    },
-  ];
-
-  console.log("Products:", products);
-
-  const fetchProducts = async () => {
-    try {
-      const response = await axiosInstance.get("/products/showAllProducts");
-      setProducts(response.data);
-    } catch (error) {
-      console.error("Error fetching products:", error);
-    }
   };
 
   useEffect(() => {
@@ -201,67 +129,125 @@ const Products = () => {
   }, []);
 
   return (
-    <Box
-      p={3}
-      sx={{
-        background: "linear-gradient(135deg, #f5f7fa, #c3cfe2)",
-        minHeight: "100vh",
-      }}
-    >
-      <Typography
-        variant="h4"
-        gutterBottom
-        sx={{
-          textAlign: "center",
-          fontWeight: "bold",
-        }}
-      >
-        Product Management
-      </Typography>
-      <Box display="flex" justifyContent="flex-end" mb={2}>
-        <Button
-          variant="contained"
-          startIcon={<AddIcon />}
-          onClick={() => setDialogOpen(true)}
-          sx={{
-            backgroundImage: "linear-gradient(to right, #ff7e5f, #feb47b)",
-            color: "#000",
-            "&:hover": {
-              backgroundImage: "linear-gradient(to right, #ff6b6b, #ff9e57)",
-            },
-          }}
-        >
-          Add Product
-        </Button>
-      </Box>
+    <Box className="px-6 bg-gradient-to-br from-gray-200 to-blue-200 min-h-screen">
+      <div className="flex justify-between items-center px-4 md:px-8 py-4">
+        <p className="text-center font-bold text-2xl md:text-4xl">Products</p>
+        <Box className="flex justify-end w-full md:w-auto">
+          <button
+            onClick={() => setDialogOpen(true)}
+            className="bg-gradient-to-r from-yellow-400 to-orange-500 text-black font-semibold py-2 px-6 rounded-lg shadow-lg transform transition duration-300 hover:bg-gradient-to-r hover:from-yellow-500 hover:to-orange-600 hover:scale-105 active:scale-95"
+          >
+            Add Product
+          </button>
+        </Box>
+      </div>
 
-      {/* Data Table */}
-      <Box
-        sx={{
-          height: 400,
-          width: "100%",
-          "& .MuiDataGrid-root": {
-            borderRadius: 1,
-            backgroundColor: "#ffffff",
-            fontSize: "1.1rem",
-            boxShadow: "0 3px 6px rgba(0,0,0,0.1)",
-          },
-          "& .MuiDataGrid-cell": {
-            textAlign: "center",
-          },
-          "& .MuiDataGrid-columnHeaders": {
-            backgroundImage: "linear-gradient(to right, #2193b0, #6dd5ed)",
-            fontWeight: "bold",
-          },
-        }}
-      >
-        <DataGrid
-          rows={products?.map((product) => ({ id: product?._id, ...product }))}
-          columns={columns}
-          pageSize={5}
-          rowsPerPageOptions={[5, 10, 20]}
-        />
-      </Box>
+      {/* Custom Table with Skeleton Loading */}
+      <div className="overflow-x-auto rounded-lg shadow-lg relative">
+        {/* Blurred background during loading */}
+        {loading && (
+          <div className="absolute inset-0 bg-black opacity-40 backdrop-blur-md z-10"></div>
+        )}
+
+        <table className="min-w-full bg-white border-separate border-spacing-0">
+          <thead className="bg-gradient-to-r from-blue-600 via-purple-500 to-pink-500 text-white">
+            <tr className="text-sm ">
+              <th className="px-4 py-3 text-left">Image</th>
+              <th className="px-4 py-3 text-left">Name</th>
+              <th className="px-4 py-3 text-left">Description</th>
+              <th className="px-4 py-3 text-left">Price ($)</th>
+              <th className="px-4 py-3 text-left">Category</th>
+              <th className="px-4 py-3 text-left">Status</th>
+              <th className="px-4 py-3 text-left">Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            {loading
+              ? // Skeleton Loader
+                Array(5)
+                  .fill(0)
+                  .map((_, index) => (
+                    <tr
+                      key={index}
+                      className="odd:bg-gray-50 even:bg-gray-100 animate-pulse"
+                    >
+                      <td className="px-4 py-3">
+                        <div className="w-12 h-12 bg-gray-300 rounded-full"></div>
+                      </td>
+                      <td className="px-4 py-3">
+                        <div className="w-32 h-4 bg-gray-300 rounded"></div>
+                      </td>
+                      <td className="px-4 py-3">
+                        <div className="w-48 h-4 bg-gray-300 rounded"></div>
+                      </td>
+                      <td className="px-4 py-3">
+                        <div className="w-16 h-4 bg-gray-300 rounded"></div>
+                      </td>
+                      <td className="px-4 py-3">
+                        <div className="w-24 h-4 bg-gray-300 rounded"></div>
+                      </td>
+                      <td className="px-4 py-3">
+                        <div className="w-20 h-4 bg-gray-300 rounded"></div>
+                      </td>
+                      <td className="px-4 py-3">
+                        <div className="flex gap-2">
+                          <div className="w-20 h-6 bg-gray-300 rounded"></div>
+                          <div className="w-20 h-6 bg-gray-300 rounded"></div>
+                        </div>
+                      </td>
+                    </tr>
+                  ))
+              : products.map((product) => (
+                  <tr
+                    key={product._id}
+                    className="odd:bg-gray-50 even:bg-gray-100 hover:bg-gray-200 transition-all"
+                  >
+                    <td className="px-4 py-3">
+                      <img
+                        src={product.image}
+                        alt={product.name}
+                        className="w-12 h-12 rounded-full object-cover border-2 border-gray-300"
+                      />
+                    </td>
+                    <td className="px-4 py-3 text-xs sm:text-base">
+                      {product.name}
+                    </td>
+                    <td className="px-4 py-3 text-xs sm:text-base">
+                      {product.description}
+                    </td>
+                    <td className="px-4 py-3 text-xs sm:text-base">
+                      ${product.price}
+                    </td>
+                    <td className="px-4 py-3 text-xs sm:text-base">
+                      {product.category}
+                    </td>
+                    <td className="px-4 py-3 text-xs sm:text-base">
+                      {product.status}
+                    </td>
+
+                    <td className="px-4 flex gap-2 py-4">
+                      <button
+                        onClick={() => handleEditClick(product._id)}
+                        className="px-4 py-2 bg-gradient-to-r from-purple-600 to-blue-500 text-white text-sm rounded-md hover:bg-gradient-to-r hover:from-purple-700 hover:to-blue-600 flex items-center"
+                      >
+                        <Edit className="mr-2" />
+                        <span className="hidden sm:block">Edit</span>
+                      </button>
+
+                      <button
+                        onClick={() => handleDeleteClick(product._id)}
+                        className="px-4 py-2 border border-red-500 text-red-500 text-sm rounded-md hover:border-red-600 hover:text-red-600 flex items-center"
+                      >
+                        <Delete className="mr-2" />
+                        <span className="hidden sm:block">Delete</span>
+                      </button>
+                    </td>
+                  </tr>
+                ))}
+          </tbody>
+        </table>
+      </div>
+
       {/* Add Product Dialog */}
       <AddProductDialog
         isDialogOpen={isDialogOpen}
@@ -274,7 +260,6 @@ const Products = () => {
       />
 
       {/* Edit Product Dialog */}
-
       <EditProductDialog
         isEditDialogOpen={isEditDialogOpen}
         setEditDialogOpen={setEditDialogOpen}
@@ -286,7 +271,6 @@ const Products = () => {
       />
 
       {/* Delete Confirmation Dialog */}
-
       <DeleteDialog
         isDeleteDialogOpen={isDeleteDialogOpen}
         setDeleteDialogOpen={setDeleteDialogOpen}

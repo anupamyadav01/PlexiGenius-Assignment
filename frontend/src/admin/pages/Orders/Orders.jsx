@@ -1,57 +1,52 @@
-import { useState } from "react";
-import {
-  Box,
-  Button,
-  Dialog,
-  DialogContent,
-  MenuItem,
-  Select,
-  Typography,
-} from "@mui/material";
-import { DataGrid } from "@mui/x-data-grid";
-import Timeline from "@mui/lab/Timeline";
-import TimelineItem from "@mui/lab/TimelineItem";
-import TimelineSeparator from "@mui/lab/TimelineSeparator";
-import TimelineConnector from "@mui/lab/TimelineConnector";
-import TimelineContent from "@mui/lab/TimelineContent";
-import TimelineDot from "@mui/lab/TimelineDot";
+import { useState, useEffect } from "react";
 
 const Orders = () => {
-  const [orders, setOrders] = useState([
-    {
-      id: 1,
-      orderId: "ORD001",
-      productImg: "https://via.placeholder.com/50",
-      productName: "Smartphone",
-      customerName: "John Doe",
-      status: "Delivered",
-      timeline: [
-        {
-          status: "Order Confirmed",
-          timestamp: "Fri, 22nd Nov '24 - 11:21 AM",
-          description: "Your order has been placed.",
-        },
-        {
-          status: "Shipped",
-          timestamp: "Sat, 23rd Nov '24 - 10:28 AM",
-          description: "Your item has been picked up by courier partner.",
-        },
-        {
-          status: "Out For Delivery",
-          timestamp: "Mon, 25th Nov '24 - 8:17 AM",
-          description: "Your item is out for delivery.",
-        },
-        {
-          status: "Delivered",
-          timestamp: "Mon, 25th Nov '24 - 9:34 AM",
-          description: "Your item has been delivered.",
-        },
-      ],
-    },
-  ]);
-
+  const [orders, setOrders] = useState([]);
+  const [loading, setLoading] = useState(true); // Loading state
   const [selectedOrder, setSelectedOrder] = useState(null);
   const [detailsOpen, setDetailsOpen] = useState(false);
+
+  // Simulate loading data for 2 seconds
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setOrders([
+        {
+          id: 1,
+          orderId: "ORD001",
+          productImg: "https://via.placeholder.com/50",
+          productName: "Smartphone",
+          customerName: "John Doe",
+          status: "Delivered",
+          timeline: [
+            {
+              status: "Order Confirmed",
+              timestamp: "Fri, 22nd Nov '24 - 11:21 AM",
+              description: "Your order has been placed.",
+            },
+            {
+              status: "Shipped",
+              timestamp: "Sat, 23rd Nov '24 - 10:28 AM",
+              description: "Your item has been picked up by courier partner.",
+            },
+            {
+              status: "Out For Delivery",
+              timestamp: "Mon, 25th Nov '24 - 8:17 AM",
+              description: "Your item is out for delivery.",
+            },
+            {
+              status: "Delivered",
+              timestamp: "Mon, 25th Nov '24 - 9:34 AM",
+              description: "Your item has been delivered.",
+            },
+          ],
+        },
+        // Add more orders here if necessary for testing
+      ]);
+      setLoading(false);
+    }, 2000); // Simulate a 2-second loading time
+
+    return () => clearTimeout(timer); // Clean up timer on unmount
+  }, []);
 
   const handleDetailsOpen = (order) => {
     setSelectedOrder(order);
@@ -71,198 +66,168 @@ const Orders = () => {
     );
   };
 
-  const columns = [
-    {
-      field: "productImg",
-      headerName: "Product Image",
-      width: 120,
-      renderCell: (params) => (
-        <img
-          src={params.value}
-          alt="Product"
-          style={{ width: "50px", height: "50px", borderRadius: "50%" }}
-        />
-      ),
-    },
-    { field: "orderId", headerName: "Order ID", width: 150 },
-    { field: "productName", headerName: "Product Name", width: 200 },
-    { field: "customerName", headerName: "Customer Name", width: 200 },
-    {
-      field: "status",
-      headerName: "Order Status",
-      width: 200,
-      display: "flex",
-      renderCell: (params) => (
-        <Typography
-          sx={{
-            padding: "4px 8px",
-            borderRadius: "5px",
-            backgroundColor: (() => {
-              switch (params.value) {
-                case "Delivered":
-                  return "#4caf50";
-                case "Shipped":
-                  return "#2196f3";
-                case "Out For Delivery":
-                  return "#ff9800";
-                case "Order Confirmed":
-                  return "#9c27b0";
-                default:
-                  return "#757575";
-              }
-            })(),
-            color: "#fff",
-            textAlign: "center",
-          }}
-        >
-          {params.value}
-        </Typography>
-      ),
-    },
-    {
-      field: "changeStatus",
-      headerName: "Change Status",
-      width: 200,
-      renderCell: (params) => (
-        <Select
-          value={params.row.status}
-          onChange={(e) => handleStatusChange(params.row.id, e.target.value)}
-          sx={{ width: "100%" }}
-        >
-          <MenuItem value="Order Confirmed">Order Confirmed</MenuItem>
-          <MenuItem value="Shipped">Shipped</MenuItem>
-          <MenuItem value="Out For Delivery">Out For Delivery</MenuItem>
-          <MenuItem value="Delivered">Delivered</MenuItem>
-        </Select>
-      ),
-    },
-    {
-      field: "actions",
-      headerName: "Actions",
-      width: 150,
-      renderCell: (params) => (
-        <Button
-          variant="contained"
-          color="primary"
-          onClick={() => handleDetailsOpen(params.row)}
-        >
-          More Details
-        </Button>
-      ),
-    },
-  ];
-
   return (
-    <Box
-      p={3}
-      sx={{
-        background: "linear-gradient(135deg, #f0f4f7, #d9e8fc)",
-        minHeight: "100vh",
-      }}
-    >
-      <Typography
-        variant="h4"
-        gutterBottom
-        sx={{ fontWeight: "bold", color: "#3f51b5" }}
-      >
+    <div className="p-6 bg-gradient-to-br from-blue-100 to-blue-300 min-h-screen">
+      <h1 className="text-3xl font-bold text-center mb-8 text-indigo-700">
         Order Management
-      </Typography>
+      </h1>
 
-      <Box
-        sx={{
-          height: 500,
-          width: "100%",
-          backgroundColor: "#fff",
-          borderRadius: "8px",
-          boxShadow: "0 4px 8px rgba(0, 0, 0, 0.1)",
-          overflow: "hidden",
-        }}
-      >
-        <DataGrid
-          rows={orders}
-          columns={columns}
-          pageSize={5}
-          rowsPerPageOptions={[5, 10, 20]}
-          sx={{
-            "& .MuiDataGrid-columnHeaders": {
-              fontWeight: "bold",
-              fontSize: "16px",
-            },
-            "& .MuiDataGrid-cell": {
-              fontSize: "14px",
-            },
-          }}
-        />
-      </Box>
+      {/* Orders Table */}
+      <div className="overflow-x-auto shadow-md rounded-lg bg-white mb-8 mx-auto w-full relative">
+        {loading && (
+          <div className="absolute inset-0 bg-white opacity-80 backdrop-blur-md z-10"></div>
+        )}
 
-      <Dialog
-        open={detailsOpen}
-        onClose={handleDetailsClose}
-        maxWidth="sm"
-        fullWidth
-      >
-        <DialogContent
-          sx={{
-            backgroundColor: "#f0f4f7",
-            borderRadius: "8px",
-            boxShadow: "0 2px 4px rgba(0, 0, 0, 0.1)",
-          }}
-        >
-          {selectedOrder && (
-            <>
-              <Typography
-                variant="h6"
-                gutterBottom
-                sx={{ textAlign: "center", fontWeight: "bold" }}
-              >
-                Order Timeline for {selectedOrder?.orderId}
-              </Typography>
-              <Timeline
-                sx={{
-                  paddingLeft: 0,
-                  marginLeft: 0,
-                  "& .MuiTimelineDot-root": {
-                    backgroundColor: "#3f51b5",
-                  },
-                }}
-              >
-                {selectedOrder.timeline.map((event, index) => (
-                  <TimelineItem key={index}>
-                    <TimelineSeparator>
-                      <TimelineDot />
-                      {index < selectedOrder.timeline.length - 1 && (
-                        <TimelineConnector />
-                      )}
-                    </TimelineSeparator>
-                    <TimelineContent>
-                      <Typography variant="body1" fontWeight="bold">
-                        {event.status}
-                      </Typography>
-                      <Typography variant="body2" color="textSecondary">
-                        {event.timestamp}
-                      </Typography>
-                      <Typography variant="body2">
-                        {event.description}
-                      </Typography>
-                    </TimelineContent>
-                  </TimelineItem>
+        {loading ? (
+          <table className="min-w-full table-auto text-left">
+            <thead className="bg-gradient-to-r from-blue-600 via-purple-500 to-pink-500 text-white">
+              <tr className="border-b">
+                <th className="px-4 py-4 animate-pulse">
+                  <div className="w-12 h-12 bg-gray-300 rounded-full"></div>
+                </th>
+                <th className="px-4 py-4 animate-pulse">
+                  <div className="w-20 h-4 bg-gray-300 rounded"></div>
+                </th>
+                <th className="px-4 py-4 animate-pulse">
+                  <div className="w-32 h-4 bg-gray-300 rounded"></div>
+                </th>
+                <th className="px-4 py-4 animate-pulse">
+                  <div className="w-32 h-4 bg-gray-300 rounded"></div>
+                </th>
+                <th className="px-4 py-4 animate-pulse">
+                  <div className="w-24 h-4 bg-gray-300 rounded"></div>
+                </th>
+                <th className="px-4 py-4 animate-pulse">
+                  <div className="w-40 h-4 bg-gray-300 rounded"></div>
+                </th>
+              </tr>
+            </thead>
+            <tbody>
+              {Array(5)
+                .fill(0)
+                .map((_, index) => (
+                  <tr key={index} className="border-b animate-pulse">
+                    <td className="px-4 py-2">
+                      <div className="w-12 h-12 bg-gray-300 rounded-full"></div>
+                    </td>
+                    <td className="px-4 py-2">
+                      <div className="w-20 h-4 bg-gray-300 rounded"></div>
+                    </td>
+                    <td className="px-4 py-2">
+                      <div className="w-32 h-4 bg-gray-300 rounded"></div>
+                    </td>
+                    <td className="px-4 py-2">
+                      <div className="w-32 h-4 bg-gray-300 rounded"></div>
+                    </td>
+                    <td className="px-4 py-2">
+                      <div className="w-24 h-4 bg-gray-300 rounded"></div>
+                    </td>
+                    <td className="px-4 py-2">
+                      <div className="w-40 h-4 bg-gray-300 rounded"></div>
+                    </td>
+                  </tr>
                 ))}
-              </Timeline>
-              <Box textAlign="right">
-                <Button
-                  onClick={handleDetailsClose}
-                  variant="contained"
-                  color="secondary"
-                  sx={{ mt: 2 }}
-                >
-                  Close
-                </Button>
-              </Box>
-            </>
-          )}
-        </DialogContent>
-      </Dialog>
-    </Box>
+            </tbody>
+          </table>
+        ) : (
+          <table className="min-w-full table-auto text-left">
+            <thead className="bg-gradient-to-r from-blue-600 via-purple-500 to-pink-500 text-white">
+              <tr className="border-b">
+                <th className="px-4 py-4">Product Image</th>
+                <th className="px-4 py-4">Order ID</th>
+                <th className="px-4 py-4">Product Name</th>
+                <th className="px-4 py-4">Customer Name</th>
+                <th className="px-4 py-4">Order Status</th>
+                <th className="px-4 py-4">Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              {orders.map((order) => (
+                <tr key={order.id} className="border-b hover:bg-gray-50">
+                  <td className="px-4 py-2">
+                    <img
+                      src={order.productImg}
+                      alt="Product"
+                      className="w-12 h-12 rounded-full"
+                    />
+                  </td>
+                  <td className="px-4 py-2">{order.orderId}</td>
+                  <td className="px-4 py-2">{order.productName}</td>
+                  <td className="px-4 py-2">{order.customerName}</td>
+                  <td className="px-4 py-2">
+                    <span
+                      className={`px-3 py-1 rounded-full text-white ${
+                        order.status === "Delivered"
+                          ? "bg-green-500"
+                          : order.status === "Shipped"
+                          ? "bg-blue-500"
+                          : order.status === "Out For Delivery"
+                          ? "bg-orange-500"
+                          : "bg-purple-500"
+                      }`}
+                    >
+                      {order.status}
+                    </span>
+                  </td>
+                  <td className="px-4 py-2">
+                    {/* Status Change Dropdown */}
+                    <select
+                      value={order.status}
+                      onChange={(e) =>
+                        handleStatusChange(order.id, e.target.value)
+                      }
+                      className="px-3 py-1 border rounded-lg bg-gray-100 text-sm"
+                    >
+                      <option value="Order Confirmed">Order Confirmed</option>
+                      <option value="Shipped">Shipped</option>
+                      <option value="Out For Delivery">Out For Delivery</option>
+                      <option value="Delivered">Delivered</option>
+                    </select>
+                    <button
+                      onClick={() => handleDetailsOpen(order)}
+                      className="ml-2 px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600"
+                    >
+                      More Details
+                    </button>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        )}
+      </div>
+
+      {/* Modal for Order Details */}
+      {detailsOpen && selectedOrder && (
+        <div className="fixed inset-0 flex items-center justify-center bg-gray-500 bg-opacity-50 z-50">
+          <div className="bg-white p-6 rounded-lg shadow-lg w-11/12 max-w-lg">
+            <h3 className="text-xl font-bold text-center text-indigo-700 mb-4">
+              Order Timeline for {selectedOrder.orderId}
+            </h3>
+            <div className="space-y-4">
+              {selectedOrder.timeline.map((event, index) => (
+                <div key={index} className="flex items-start space-x-4">
+                  <div className="w-2.5 h-2.5 rounded-full bg-indigo-500 mt-1" />
+                  <div>
+                    <p className="font-semibold">{event.status}</p>
+                    <p className="text-sm text-gray-500">{event.timestamp}</p>
+                    <p className="text-sm">{event.description}</p>
+                  </div>
+                </div>
+              ))}
+            </div>
+            <div className="text-right mt-6">
+              <button
+                onClick={handleDetailsClose}
+                className="px-4 py-2 bg-gray-300 text-gray-800 rounded-lg hover:bg-gray-400"
+              >
+                Close
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+    </div>
   );
 };
 

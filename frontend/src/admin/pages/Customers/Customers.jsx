@@ -1,6 +1,4 @@
-import { useState } from "react";
-import { Box, TextField, Typography, InputAdornment } from "@mui/material";
-import { DataGrid } from "@mui/x-data-grid";
+import { useState, useEffect } from "react";
 import SearchIcon from "@mui/icons-material/Search";
 
 const Customer = () => {
@@ -43,6 +41,7 @@ const Customer = () => {
   ]);
 
   const [filterText, setFilterText] = useState("");
+  const [loading, setLoading] = useState(true); // Loading state
 
   const handleSearchChange = (e) => {
     setFilterText(e.target.value.toLowerCase());
@@ -54,101 +53,119 @@ const Customer = () => {
       customer.email.toLowerCase().includes(filterText)
   );
 
-  const columns = [
-    { field: "name", headerName: "Customer Name", width: 200 },
-    { field: "email", headerName: "Email Address", width: 250 },
-    { field: "contact", headerName: "Contact Number", width: 200 },
-    { field: "products", headerName: "Products Purchased", width: 300 },
-  ];
+  // Simulate loading for 1.5 seconds
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setLoading(false);
+    }, 1500); // Simulate a 1.5 seconds delay
+
+    return () => clearTimeout(timer); // Clean up the timeout
+  }, []);
 
   return (
-    <Box
-      p={3}
-      sx={{
-        background: "linear-gradient(135deg, #f5f7fa, #c3cfe2)",
-        minHeight: "100vh",
-      }}
-    >
-      <Typography
-        variant="h4"
-        gutterBottom
-        textAlign="center"
-        fontWeight="bold"
-      >
+    <div className="p-6 bg-gradient-to-br from-blue-100 to-blue-300 min-h-screen">
+      <h1 className="text-3xl font-bold text-center mb-8">
         Customer Management
-      </Typography>
+      </h1>
 
-      <Box
-        display="flex"
-        justifyContent="center"
-        alignItems="center"
-        mb={3}
-        sx={{
-          flexDirection: { xs: "column", md: "row" },
-          gap: { xs: 2, md: 0 },
-        }}
-      >
-        <TextField
-          placeholder="Search by Name or Email"
-          variant="outlined"
-          size="small"
-          value={filterText}
-          onChange={handleSearchChange}
-          InputProps={{
-            startAdornment: (
-              <InputAdornment position="start">
-                <SearchIcon />
-              </InputAdornment>
-            ),
-          }}
-          sx={{
-            width: { xs: "100%", md: "50%" },
-            boxShadow: "0px 2px 5px rgba(0, 0, 0, 0.1)",
-            borderRadius: 2,
-          }}
-        />
-      </Box>
-
-      {/* Data Table */}
-      <Box
-        sx={{
-          height: 450,
-          width: "80%",
-          padding: 2,
-          margin: "0 auto",
-          boxShadow: 4,
-          "& .MuiDataGrid-root": { border: "none" },
-          "& .MuiDataGrid-columnHeaders": {
-            backgroundColor: "#e3f2fd",
-            fontWeight: "bold",
-            fontSize: "1.1rem",
-          },
-          "& .MuiDataGrid-row:nth-of-type(odd)": {
-            backgroundColor: "#f9f9f9",
-            textAlign: "start",
-          },
-          "& .MuiDataGrid-cell": {},
-        }}
-      >
-        {filteredCustomers.length > 0 ? (
-          <DataGrid
-            rows={filteredCustomers}
-            columns={columns}
-            pageSize={5}
-            rowsPerPageOptions={[5, 10, 20]}
-            sx={{
-              "& .MuiDataGrid-cell:hover": {
-                color: "#1565c0",
-              },
-            }}
+      <div className="flex justify-center mb-6">
+        <div className="relative w-full sm:w-1/2 md:w-1/3">
+          <input
+            type="text"
+            placeholder="Search by Name or Email"
+            value={filterText}
+            onChange={handleSearchChange}
+            className="w-full p-3 pl-10 border border-gray-300 rounded-lg shadow-md focus:outline-none focus:ring-2 focus:ring-blue-500"
           />
-        ) : (
-          <Typography variant="body1" color="text.secondary" textAlign="center">
-            No customers found. Please refine your search.
-          </Typography>
+          <div className="absolute left-3 top-3 text-gray-500">
+            <SearchIcon />
+          </div>
+        </div>
+      </div>
+
+      {/* Customer Table with Skeleton Loading */}
+      <div className="overflow-x-auto shadow-md rounded-lg bg-white max-w-screen-lg mx-auto relative">
+        {/* Blurred background during loading */}
+        {loading && (
+          <div className="absolute inset-0 bg-black opacity-40 backdrop-blur-md z-10"></div>
         )}
-      </Box>
-    </Box>
+
+        {loading ? (
+          <table className="table-auto w-full">
+            <thead className="bg-gradient-to-r from-blue-600 via-purple-500 to-pink-500 text-white">
+              <tr className="border-b py-6">
+                <th className="px-4 py-4 text-base text-left font-semibold">
+                  Customer Name
+                </th>
+                <th className="px-4 py-4 text-base text-left font-semibold">
+                  Email Address
+                </th>
+                <th className="px-4 py-4 text-base text-left font-semibold">
+                  Contact Number
+                </th>
+                <th className="px-4 py-4 text-base text-left font-semibold">
+                  Products Purchased
+                </th>
+              </tr>
+            </thead>
+            <tbody>
+              {/* Skeleton Rows */}
+              {Array(5)
+                .fill(0)
+                .map((_, index) => (
+                  <tr key={index} className="border-b animate-pulse">
+                    <td className="px-4 py-4">
+                      <div className="w-32 h-4 bg-gray-300 rounded"></div>
+                    </td>
+                    <td className="px-4 py-4">
+                      <div className="w-48 h-4 bg-gray-300 rounded"></div>
+                    </td>
+                    <td className="px-4 py-4">
+                      <div className="w-32 h-4 bg-gray-300 rounded"></div>
+                    </td>
+                    <td className="px-4 py-4">
+                      <div className="w-48 h-4 bg-gray-300 rounded"></div>
+                    </td>
+                  </tr>
+                ))}
+            </tbody>
+          </table>
+        ) : filteredCustomers.length > 0 ? (
+          <table className="table-auto w-full">
+            <thead className="bg-gradient-to-r from-blue-600 via-purple-500 to-pink-500 text-white">
+              <tr className="border-b py-6">
+                <th className="px-4 py-4 text-base text-left font-semibold">
+                  Customer Name
+                </th>
+                <th className="px-4 py-4 text-base text-left font-semibold">
+                  Email Address
+                </th>
+                <th className="px-4 py-4 text-base text-left font-semibold">
+                  Contact Number
+                </th>
+                <th className="px-4 py-4 text-base text-left font-semibold">
+                  Products Purchased
+                </th>
+              </tr>
+            </thead>
+            <tbody>
+              {filteredCustomers.map((customer) => (
+                <tr key={customer.id} className="border-b hover:bg-gray-50">
+                  <td className="px-4 py-2">{customer.name}</td>
+                  <td className="px-4 py-2">{customer.email}</td>
+                  <td className="px-4 py-2">{customer.contact}</td>
+                  <td className="px-4 py-2">{customer.products}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        ) : (
+          <p className="text-center text-gray-500">
+            No customers found. Please refine your search.
+          </p>
+        )}
+      </div>
+    </div>
   );
 };
 
