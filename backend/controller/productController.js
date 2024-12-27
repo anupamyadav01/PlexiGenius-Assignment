@@ -2,7 +2,8 @@ import { ProductModel } from "../model/productModel.js";
 import mongoose from "mongoose";
 
 export const addNewProduct = async (req, res) => {
-  const { name, price, description, category, status, image } = req.body;
+  const image = req.secure_url;
+  const { name, price, description, category, status } = req.body;
 
   try {
     const numPrice = +price; // Ensure price is a number

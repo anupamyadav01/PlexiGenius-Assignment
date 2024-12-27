@@ -7,6 +7,7 @@ import { connectToDB } from "./services/connectToDB.js";
 import { categoriesRoute } from "./routes/categoriesRoutes.js";
 import { productRouter } from "./routes/productRoutes.js";
 import { authRoutes } from "./routes/authRoutes.js";
+import { generalRoutes } from "./routes/generalRoutes.js";
 
 dotenv.config();
 const PORT = process.env.PORT || 10001;
@@ -27,6 +28,7 @@ app.use(
 app.use("/api/categories", categoriesRoute);
 app.use("/api/products", productRouter);
 app.use("/api/auth", authRoutes);
+app.use("/api/general", generalRoutes);
 
 connectToDB();
 
