@@ -146,7 +146,7 @@ const Products = () => {
       <div className="overflow-x-auto rounded-lg shadow-lg relative">
         {/* Blurred background during loading */}
         {loading && (
-          <div className="absolute inset-0 bg-black opacity-40 backdrop-blur-md z-10"></div>
+          <div className="absolute inset-0 bg-gray-100 opacity-40 backdrop-blur-md z-10"></div>
         )}
 
         <table className="min-w-full bg-white border-separate border-spacing-0">

@@ -9,6 +9,7 @@ import Admin from "./admin/Admin";
 
 const App = () => {
   const [userRole, setUserRole] = useState(null);
+  const [loading, setLoading] = useState(true); // Track loading state
 
   useEffect(() => {
     const getUserDetails = async () => {
@@ -27,17 +28,23 @@ const App = () => {
       }
     };
 
-    getUserDetails();
+    // Simulate loading for 2 seconds before fetching user details
+    const timer = setTimeout(() => {
+      getUserDetails();
+      setLoading(false); // After 2 seconds, stop the loading state
+    }, 2000); // 2-second delay for loading simulation
+
+    return () => clearTimeout(timer); // Cleanup timer on component unmount
   }, []);
 
-  if (userRole === null) {
+  if (loading) {
     return (
       <div className="relative flex items-center justify-center h-screen bg-gray-200 overflow-hidden">
         <div className="absolute inset-0 bg-black opacity-40 backdrop-blur-md"></div>
 
         <div className="absolute inset-0 bg-gray-300 animate-pulse rounded-lg"></div>
 
-        <p className="relative text-white text-4xl font-semibold animate-jump">
+        <p className="relative text-black text-4xl font-semibold animate-jump">
           Loading...
         </p>
       </div>

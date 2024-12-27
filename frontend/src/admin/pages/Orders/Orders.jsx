@@ -108,22 +108,22 @@ const Orders = () => {
                 .map((_, index) => (
                   <tr key={index} className="border-b animate-pulse">
                     <td className="px-4 py-2">
-                      <div className="w-12 h-12 bg-gray-300 rounded-full"></div>
+                      <div className="w-12 h-12 bg-gray-100 rounded-full"></div>
                     </td>
                     <td className="px-4 py-2">
-                      <div className="w-20 h-4 bg-gray-300 rounded"></div>
+                      <div className="w-20 h-4 bg-gray-100 rounded"></div>
                     </td>
                     <td className="px-4 py-2">
-                      <div className="w-32 h-4 bg-gray-300 rounded"></div>
+                      <div className="w-32 h-4 bg-gray-100 rounded"></div>
                     </td>
                     <td className="px-4 py-2">
-                      <div className="w-32 h-4 bg-gray-300 rounded"></div>
+                      <div className="w-32 h-4 bg-gray-100 rounded"></div>
                     </td>
                     <td className="px-4 py-2">
-                      <div className="w-24 h-4 bg-gray-300 rounded"></div>
+                      <div className="w-24 h-4 bg-gray-100 rounded"></div>
                     </td>
                     <td className="px-4 py-2">
-                      <div className="w-40 h-4 bg-gray-300 rounded"></div>
+                      <div className="w-40 h-4 bg-gray-100 rounded"></div>
                     </td>
                   </tr>
                 ))}

@@ -53,13 +53,12 @@ const Customer = () => {
       customer.email.toLowerCase().includes(filterText)
   );
 
-  // Simulate loading for 1.5 seconds
   useEffect(() => {
     const timer = setTimeout(() => {
       setLoading(false);
-    }, 1500); // Simulate a 1.5 seconds delay
+    }, 1500);
 
-    return () => clearTimeout(timer); // Clean up the timeout
+    return () => clearTimeout(timer);
   }, []);
 
   return (
@@ -84,10 +83,10 @@ const Customer = () => {
       </div>
 
       {/* Customer Table with Skeleton Loading */}
-      <div className="overflow-x-auto shadow-md rounded-lg bg-white max-w-screen-lg mx-auto relative">
+      <div className="overflow-hidden shadow-md rounded-lg bg-white max-w-screen-lg mx-auto relative">
         {/* Blurred background during loading */}
         {loading && (
-          <div className="absolute inset-0 bg-black opacity-40 backdrop-blur-md z-10"></div>
+          <div className="absolute inset-0 bg-gray-500 opacity-10 backdrop-blur-md z-10"></div>
         )}
 
         {loading ? (
@@ -113,18 +112,25 @@ const Customer = () => {
               {Array(5)
                 .fill(0)
                 .map((_, index) => (
-                  <tr key={index} className="border-b animate-pulse">
-                    <td className="px-4 py-4">
-                      <div className="w-32 h-4 bg-gray-300 rounded"></div>
+                  <tr
+                    key={index}
+                    className="border-b odd:bg-gray-100 even:bg-gray-200 animate-pulse"
+                  >
+                    <td className="px-4 py-4 text-sm sm:text-base">
+                      <div className="w-32 h-5 bg-gray-300 rounded"></div>{" "}
+                      {/* Skeleton for name */}
                     </td>
-                    <td className="px-4 py-4">
-                      <div className="w-48 h-4 bg-gray-300 rounded"></div>
+                    <td className="px-4 py-4 text-sm sm:text-base">
+                      <div className="w-48 h-5 bg-gray-300 rounded"></div>{" "}
+                      {/* Skeleton for email */}
                     </td>
-                    <td className="px-4 py-4">
-                      <div className="w-32 h-4 bg-gray-300 rounded"></div>
+                    <td className="px-4 py-4 text-sm sm:text-base">
+                      <div className="w-32 h-5 bg-gray-300 rounded"></div>{" "}
+                      {/* Skeleton for contact */}
                     </td>
-                    <td className="px-4 py-4">
-                      <div className="w-48 h-4 bg-gray-300 rounded"></div>
+                    <td className="px-4 py-4 text-sm sm:text-base">
+                      <div className="w-48 h-5 bg-gray-300 rounded"></div>{" "}
+                      {/* Skeleton for products */}
                     </td>
                   </tr>
                 ))}
@@ -150,11 +156,22 @@ const Customer = () => {
             </thead>
             <tbody>
               {filteredCustomers.map((customer) => (
-                <tr key={customer.id} className="border-b hover:bg-gray-50">
-                  <td className="px-4 py-2">{customer.name}</td>
-                  <td className="px-4 py-2">{customer.email}</td>
-                  <td className="px-4 py-2">{customer.contact}</td>
-                  <td className="px-4 py-2">{customer.products}</td>
+                <tr
+                  key={customer.id}
+                  className="odd:bg-gray-100 even:bg-gray-200 hover:bg-gray-50"
+                >
+                  <td className="px-4 py-2 text-sm sm:text-base">
+                    {customer.name}
+                  </td>
+                  <td className="px-4 py-2 text-sm sm:text-base">
+                    {customer.email}
+                  </td>
+                  <td className="px-4 py-2 text-sm sm:text-base">
+                    {customer.contact}
+                  </td>
+                  <td className="px-4 py-2 text-sm sm:text-base">
+                    {customer.products}
+                  </td>
                 </tr>
               ))}
             </tbody>
