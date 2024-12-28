@@ -10,25 +10,53 @@ export default function LoginForm() {
     password: "",
   });
 
+  const [errors, setErrors] = useState({
+    email: "",
+    password: "",
+  });
+
   const [showPassword, setShowPassword] = useState(false);
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     setFormData({ ...formData, [name]: value });
+
+    // Clear errors on input change
+    setErrors({ ...errors, [name]: "" });
+  };
+
+  const validateForm = () => {
+    const newErrors = {};
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+    if (!emailRegex.test(formData.email)) {
+      newErrors.email = "Please enter a valid email address.";
+    }
+
+    if (formData.password.length < 6) {
+      newErrors.password = "Password must be at least 6 characters long.";
+    }
+
+    setErrors(newErrors);
+
+    return Object.keys(newErrors).length === 0;
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+
+    if (!validateForm()) return;
+
     try {
       const response = await axiosInstance.post("/auth/login", formData);
       if (response.status === 200) {
         toast.success("Logged in successfully");
+        setTimeout(() => {
+          navigate("/");
+        }, 2000);
       }
-      setTimeout(() => {
-        navigate("/");
-      }, 2000);
     } catch (error) {
-      console.log(error);
+      console.error(error);
       toast.error("Invalid credentials", {
         duration: 4000,
         position: "top-right",
@@ -47,6 +75,7 @@ export default function LoginForm() {
           Log In
         </h1>
         <form onSubmit={handleSubmit} noValidate>
+          {/* Email Input */}
           <div className="mb-4">
             <label
               htmlFor="email"
@@ -60,11 +89,18 @@ export default function LoginForm() {
               name="email"
               value={formData.email}
               onChange={handleInputChange}
-              className="w-full px-4 py-2 border rounded-md focus:ring-2 focus:ring-blue-500 focus:outline-none"
+              className={`w-full px-4 py-2 border ${
+                errors.email ? "border-red-500" : "border-gray-300"
+              } rounded-md focus:ring-2 focus:ring-blue-500 focus:outline-none`}
               placeholder="Enter your email"
               required
             />
+            {errors.email && (
+              <p className="text-red-500 text-sm mt-1">{errors.email}</p>
+            )}
           </div>
+
+          {/* Password Input */}
           <div className="mb-6">
             <label
               htmlFor="password"
@@ -79,7 +115,9 @@ export default function LoginForm() {
                 name="password"
                 value={formData.password}
                 onChange={handleInputChange}
-                className="w-full px-4 py-2 border rounded-md focus:ring-2 focus:ring-blue-500 focus:outline-none"
+                className={`w-full px-4 py-2 border ${
+                  errors.password ? "border-red-500" : "border-gray-300"
+                } rounded-md focus:ring-2 focus:ring-blue-500 focus:outline-none`}
                 placeholder="Enter your password"
                 required
               />
@@ -91,7 +129,11 @@ export default function LoginForm() {
                 {showPassword ? "Hide" : "Show"}
               </button>
             </div>
+            {errors.password && (
+              <p className="text-red-500 text-sm mt-1">{errors.password}</p>
+            )}
           </div>
+
           <button
             type="submit"
             className="w-full py-2 bg-gradient-to-r from-purple-600 to-blue-500 text-white font-bold rounded-md hover:from-blue-500 hover:to-purple-600 focus:outline-none"

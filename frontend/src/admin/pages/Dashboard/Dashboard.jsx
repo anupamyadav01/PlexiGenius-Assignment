@@ -4,7 +4,7 @@ import axiosInstance from "../../../../axiosConfig";
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import Skeleton from "react-loading-skeleton";
-import "react-loading-skeleton/dist/skeleton.css"; // for default styles
+import "react-loading-skeleton/dist/skeleton.css";
 
 const Dashboard = () => {
   const [dashboardData, setDashboardData] = useState(null);
@@ -48,6 +48,7 @@ const Dashboard = () => {
     );
 
   if (error) return <p>{error}</p>;
+  console.log(dashboardData);
 
   const cardsConfig = [
     {
@@ -68,7 +69,7 @@ const Dashboard = () => {
       name: "Orders",
       path: "/admin/orders",
       bg: "from-yellow-500 via-orange-500 to-red-500",
-      count: 120,
+      count: dashboardData?.Orders?.length || 0,
       description: "Monitor and process customer orders.",
     },
     {
@@ -92,14 +93,21 @@ const Dashboard = () => {
     >
       {/* Navbar */}
       <nav className="flex justify-between items-center h-16 px-4 sm:px-6 bg-white text-black shadow-lg">
+        {/* Logo */}
         <div className="flex items-center space-x-4">
           <h1 className="text-xl sm:text-2xl font-extrabold bg-clip-text text-transparent bg-gradient-to-r from-blue-600 via-purple-500 to-pink-500">
             Plexi<span className="text-gray-900">Genius</span>
           </h1>
         </div>
 
-        {/* Sign Out Button */}
+        {/* Navigation Links */}
         <div className="flex items-center space-x-4">
+          <Link
+            to="/"
+            className="text-sm sm:text-base font-medium text-blue-600 hover:text-blue-800 transition-colors duration-300 px-3 py-2 rounded-md bg-blue-50 hover:bg-blue-100 shadow-sm"
+          >
+            User&apos;s View
+          </Link>
           <div className="hidden sm:block">
             <Button
               onClick={handleLogout}
@@ -181,13 +189,26 @@ const Dashboard = () => {
                       <td className="px-6 py-4 text-sm text-gray-700">
                         ${product.price}
                       </td>
-                      <td className="px-6 py-4 text-sm font-bold text-green-500">
-                        {product.status}
-                      </td>
+                      {product?.status === "Not Available" && (
+                        <td className="px-6 py-4 text-sm font-bold text-red-500">
+                          {product.status}
+                        </td>
+                      )}
+                      {product?.status === "Available" && (
+                        <td className="px-6 py-4 text-sm font-bold text-green-500">
+                          {product.status}
+                        </td>
+                      )}
                     </tr>
                   ))}
                 </tbody>
               </table>
+            )}
+
+            {dashboardData?.Products?.length === 0 && (
+              <div className="flex items-center justify-center mt-8">
+                <p className="text-lg text-gray-500">No products found.</p>
+              </div>
             )}
           </div>
         </div>

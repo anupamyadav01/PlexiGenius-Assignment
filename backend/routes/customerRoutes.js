@@ -1,3 +1,6 @@
 import express from "express";
+import { getAllCustomers } from "../controller/customerController.js";
 
-const customerRoutes = express.Router();
+export const customerRoutes = express.Router();
+
+customerRoutes.get("/getCustomers", getAllCustomers);

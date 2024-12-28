@@ -8,7 +8,7 @@ import DeleteDialog from "../../components/DeleteDialog";
 
 const Products = () => {
   const [products, setProducts] = useState([]);
-  const [categories] = useState([
+  const [categories, setCategories] = useState([
     "Electronics",
     "Clothing",
     "Books",
@@ -124,8 +124,19 @@ const Products = () => {
     setDeleteDialogOpen(true);
   };
 
+  const fetchCategories = async () => {
+    try {
+      const response = await axiosInstance.get("/categories/getCategories");
+      setCategories(response.data.categories);
+      console.log(response.data.categories);
+    } catch (error) {
+      console.error("Error fetching categories:", error);
+    }
+  };
+
   useEffect(() => {
     fetchProducts();
+    fetchCategories();
   }, []);
 
   return (
@@ -169,7 +180,7 @@ const Products = () => {
                   .map((_, index) => (
                     <tr
                       key={index}
-                      className="odd:bg-gray-50 even:bg-gray-100 animate-pulse"
+                      className="odd:bg-gray-50 even:bg-gray-100 "
                     >
                       <td className="px-4 py-3">
                         <div className="w-12 h-12 bg-gray-300 rounded-full"></div>
@@ -247,6 +258,11 @@ const Products = () => {
           </tbody>
         </table>
       </div>
+      {products?.length === 0 && (
+        <div className="flex items-center justify-center mt-8">
+          <p className="text-lg text-gray-500">No products found.</p>
+        </div>
+      )}
 
       {/* Add Product Dialog */}
       <AddProductDialog

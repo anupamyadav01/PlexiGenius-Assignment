@@ -195,10 +195,15 @@ const Category = () => {
           </tbody>
         </table>
       </div>
+      {categories?.length === 0 && (
+        <div className="flex items-center justify-center mt-8">
+          <p className="text-lg text-gray-500">No categories found.</p>
+        </div>
+      )}
 
       {/* Add/Edit Dialog */}
       {isDialogOpen && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center">
+        <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex justify-center items-center">
           <div className="bg-white p-6 rounded shadow max-w-sm w-full">
             <h2 className="text-lg sm:text-xl font-bold mb-4">
               {isEditMode ? "Edit Category" : "Add Category"}
@@ -231,7 +236,7 @@ const Category = () => {
 
       {/* Delete Confirmation */}
       {isDeleteDialogOpen && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center">
+        <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex justify-center items-center">
           <div className="bg-white p-6 rounded shadow max-w-sm w-full">
             <h2 className="text-xl font-bold text-red-500 mb-4">
               Confirm Deletion

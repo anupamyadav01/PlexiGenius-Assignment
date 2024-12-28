@@ -19,6 +19,8 @@ const AddProductDialog = ({
   handleInputChange,
   categories,
 }) => {
+  console.log(categories);
+
   return (
     <Dialog
       open={isDialogOpen}
@@ -32,7 +34,7 @@ const AddProductDialog = ({
         },
       }}
     >
-      <DialogTitle sx={{ textAlign: "center", fontWeight: "bold", pb: 0 }}>
+      <DialogTitle sx={{ textAlign: "center", fontWeight: "bold", mb: 0 }}>
         Add a New Product
       </DialogTitle>
       <DialogContent
@@ -40,7 +42,7 @@ const AddProductDialog = ({
           mt: 2,
           display: "flex",
           flexDirection: "column",
-          gap: 3,
+          gap: 8,
         }}
       >
         <Box
@@ -67,9 +69,9 @@ const AddProductDialog = ({
               },
             }}
           >
-            {categories?.map((category, idx) => (
-              <MenuItem key={idx} value={category}>
-                {category}
+            {categories?.map((category) => (
+              <MenuItem key={category._id} value={category.name}>
+                {category.name}
               </MenuItem>
             ))}
           </TextField>

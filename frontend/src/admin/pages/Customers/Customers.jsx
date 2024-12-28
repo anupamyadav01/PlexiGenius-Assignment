@@ -1,47 +1,35 @@
 import { useState, useEffect } from "react";
 import SearchIcon from "@mui/icons-material/Search";
+import axiosInstance from "../../../../axiosConfig";
 
 const Customer = () => {
-  const [customers] = useState([
-    {
-      id: 1,
-      name: "John Doe",
-      email: "john.doe@example.com",
-      contact: "123-456-7890",
-      products: "Smartphone, Headphones",
-    },
-    {
-      id: 2,
-      name: "Jane Smith",
-      email: "jane.smith@example.com",
-      contact: "987-654-3210",
-      products: "Laptop, Mouse",
-    },
-    {
-      id: 3,
-      name: "Robert Brown",
-      email: "robert.brown@example.com",
-      contact: "456-789-1230",
-      products: "Refrigerator, Washing Machine",
-    },
-    {
-      id: 4,
-      name: "Emily Davis",
-      email: "emily.davis@example.com",
-      contact: "321-654-9870",
-      products: "Books, Desk Lamp",
-    },
-    {
-      id: 5,
-      name: "Michael Johnson",
-      email: "michael.johnson@example.com",
-      contact: "789-123-4560",
-      products: "Smartwatch, Tablet",
-    },
-  ]);
-
+  const [customers, setCustomers] = useState([]);
   const [filterText, setFilterText] = useState("");
-  const [loading, setLoading] = useState(true); // Loading state
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const getAllCustomers = async () => {
+      try {
+        const { data } = await axiosInstance.get("/customer/getCustomers");
+        const formattedData = data.map((customer) => ({
+          id: customer._id,
+          name: customer.name,
+          email: customer.email,
+          contact: customer.contact || "N/A",
+          products: customer.productsPurchased
+            .map((item) => `Product ID: ${item.productId}`)
+            .join(", "),
+        }));
+        setCustomers(formattedData);
+        setLoading(false);
+      } catch (error) {
+        console.error("Error fetching customers:", error);
+        setLoading(false);
+      }
+    };
+
+    getAllCustomers();
+  }, []);
 
   const handleSearchChange = (e) => {
     setFilterText(e.target.value.toLowerCase());
@@ -52,14 +40,6 @@ const Customer = () => {
       customer.name.toLowerCase().includes(filterText) ||
       customer.email.toLowerCase().includes(filterText)
   );
-
-  useEffect(() => {
-    const timer = setTimeout(() => {
-      setLoading(false);
-    }, 1500);
-
-    return () => clearTimeout(timer);
-  }, []);
 
   return (
     <div className="p-6 bg-gradient-to-br from-blue-100 to-blue-300 min-h-screen">
@@ -82,9 +62,7 @@ const Customer = () => {
         </div>
       </div>
 
-      {/* Customer Table with Skeleton Loading */}
       <div className="overflow-hidden shadow-md rounded-lg bg-white max-w-screen-lg mx-auto relative">
-        {/* Blurred background during loading */}
         {loading && (
           <div className="absolute inset-0 bg-gray-500 opacity-10 backdrop-blur-md z-10"></div>
         )}
@@ -108,29 +86,24 @@ const Customer = () => {
               </tr>
             </thead>
             <tbody>
-              {/* Skeleton Rows */}
               {Array(5)
                 .fill(0)
                 .map((_, index) => (
                   <tr
                     key={index}
-                    className="border-b odd:bg-gray-100 even:bg-gray-200 animate-pulse"
+                    className="border-b odd:bg-gray-100 even:bg-gray-200"
                   >
                     <td className="px-4 py-4 text-sm sm:text-base">
-                      <div className="w-32 h-5 bg-gray-300 rounded"></div>{" "}
-                      {/* Skeleton for name */}
+                      <div className="w-32 h-5 bg-gray-300 rounded"></div>
                     </td>
                     <td className="px-4 py-4 text-sm sm:text-base">
-                      <div className="w-48 h-5 bg-gray-300 rounded"></div>{" "}
-                      {/* Skeleton for email */}
+                      <div className="w-48 h-5 bg-gray-300 rounded"></div>
                     </td>
                     <td className="px-4 py-4 text-sm sm:text-base">
-                      <div className="w-32 h-5 bg-gray-300 rounded"></div>{" "}
-                      {/* Skeleton for contact */}
+                      <div className="w-32 h-5 bg-gray-300 rounded"></div>
                     </td>
                     <td className="px-4 py-4 text-sm sm:text-base">
-                      <div className="w-48 h-5 bg-gray-300 rounded"></div>{" "}
-                      {/* Skeleton for products */}
+                      <div className="w-48 h-5 bg-gray-300 rounded"></div>
                     </td>
                   </tr>
                 ))}

@@ -10,6 +10,7 @@ import { authRoutes } from "./routes/authRoutes.js";
 import { generalRoutes } from "./routes/generalRoutes.js";
 import { cartRoutes } from "./routes/cartRoutes.js";
 import { orderRoutes } from "./routes/orderRoutes.js";
+import { customerRoutes } from "./routes/customerRoutes.js";
 
 dotenv.config();
 const PORT = process.env.PORT || 10001;
@@ -33,6 +34,7 @@ app.use("/api/auth", authRoutes);
 app.use("/api/general", generalRoutes);
 app.use("/api/cart", cartRoutes);
 app.use("/api/order", orderRoutes);
+app.use("/api/customer", customerRoutes);
 
 connectToDB();
 

@@ -1,4 +1,5 @@
 import { useNavigate } from "react-router-dom";
+import Navbar from "../components/Navbar";
 
 const Home = () => {
   const navigate = useNavigate();
@@ -10,6 +11,7 @@ const Home = () => {
   return (
     <div className="bg-gray-50 min-h-screen">
       {/* Welcome Section */}
+      <Navbar />
       <div className="text-center py-16 bg-gradient-to-b from-blue-200 via-blue-100 to-gray-50">
         <h1 className="text-4xl font-bold mb-4">
           Welcome to Our E-Commerce Store

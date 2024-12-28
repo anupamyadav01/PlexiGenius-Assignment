@@ -8,6 +8,15 @@ export default function RegisterForm() {
   const [formData, setFormData] = useState({
     name: "",
     email: "",
+    phone: "",
+    password: "",
+    confPassword: "",
+  });
+
+  const [errors, setErrors] = useState({
+    name: "",
+    email: "",
+    phone: "",
     password: "",
     confPassword: "",
   });
@@ -17,13 +26,44 @@ export default function RegisterForm() {
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     setFormData({ ...formData, [name]: value });
+
+    // Clear errors on input change
+    setErrors({ ...errors, [name]: "" });
   };
+
+  const validateForm = () => {
+    const newErrors = {};
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    const phoneRegex = /^[0-9]{10}$/; // Regex for validating 10-digit phone numbers
+
+    if (!formData.name.trim()) {
+      newErrors.name = "Name is required.";
+    }
+
+    if (!emailRegex.test(formData.email)) {
+      newErrors.email = "Please enter a valid email address.";
+    }
+
+    if (!phoneRegex.test(formData.phone)) {
+      newErrors.phone = "Please enter a valid 10-digit phone number.";
+    }
+
+    if (formData.password.length < 6) {
+      newErrors.password = "Password must be at least 6 characters long.";
+    }
+
+    if (formData.password !== formData.confPassword) {
+      newErrors.confPassword = "Passwords do not match.";
+    }
+
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (formData.password !== formData.confPassword) {
-      alert("Passwords do not match!");
-      return;
-    }
+    if (!validateForm()) return;
+
     try {
       const response = await axiosInstance.post("/auth/register", formData);
       console.log(response);
@@ -53,6 +93,7 @@ export default function RegisterForm() {
           Register
         </h1>
         <form onSubmit={handleSubmit} noValidate>
+          {/* Name Input */}
           <div className="mb-4">
             <label
               htmlFor="name"
@@ -66,11 +107,18 @@ export default function RegisterForm() {
               name="name"
               value={formData.name}
               onChange={handleInputChange}
-              className="w-full px-4 py-2 border rounded-md focus:ring-2 focus:ring-blue-500 focus:outline-none"
+              className={`w-full px-4 py-2 border ${
+                errors.name ? "border-red-500" : "border-gray-300"
+              } rounded-md focus:ring-2 focus:ring-blue-500 focus:outline-none`}
               placeholder="Enter your full name"
               required
             />
+            {errors.name && (
+              <p className="text-red-500 text-sm mt-1">{errors.name}</p>
+            )}
           </div>
+
+          {/* Email Input */}
           <div className="mb-4">
             <label
               htmlFor="email"
@@ -84,11 +132,43 @@ export default function RegisterForm() {
               name="email"
               value={formData.email}
               onChange={handleInputChange}
-              className="w-full px-4 py-2 border rounded-md focus:ring-2 focus:ring-blue-500 focus:outline-none"
+              className={`w-full px-4 py-2 border ${
+                errors.email ? "border-red-500" : "border-gray-300"
+              } rounded-md focus:ring-2 focus:ring-blue-500 focus:outline-none`}
               placeholder="Enter your email"
               required
             />
+            {errors.email && (
+              <p className="text-red-500 text-sm mt-1">{errors.email}</p>
+            )}
           </div>
+
+          {/* Phone Input */}
+          <div className="mb-4">
+            <label
+              htmlFor="phone"
+              className="block text-gray-700 font-medium mb-2"
+            >
+              Phone Number
+            </label>
+            <input
+              type="text"
+              id="phone"
+              name="phone"
+              value={formData.phone}
+              onChange={handleInputChange}
+              className={`w-full px-4 py-2 border ${
+                errors.phone ? "border-red-500" : "border-gray-300"
+              } rounded-md focus:ring-2 focus:ring-blue-500 focus:outline-none`}
+              placeholder="Enter your phone number"
+              required
+            />
+            {errors.phone && (
+              <p className="text-red-500 text-sm mt-1">{errors.phone}</p>
+            )}
+          </div>
+
+          {/* Password Input */}
           <div className="mb-4">
             <label
               htmlFor="password"
@@ -103,7 +183,9 @@ export default function RegisterForm() {
                 name="password"
                 value={formData.password}
                 onChange={handleInputChange}
-                className="w-full px-4 py-2 border rounded-md focus:ring-2 focus:ring-blue-500 focus:outline-none"
+                className={`w-full px-4 py-2 border ${
+                  errors.password ? "border-red-500" : "border-gray-300"
+                } rounded-md focus:ring-2 focus:ring-blue-500 focus:outline-none`}
                 placeholder="Enter your password"
                 required
               />
@@ -115,7 +197,12 @@ export default function RegisterForm() {
                 {showPassword ? "Hide" : "Show"}
               </button>
             </div>
+            {errors.password && (
+              <p className="text-red-500 text-sm mt-1">{errors.password}</p>
+            )}
           </div>
+
+          {/* Confirm Password Input */}
           <div className="mb-6">
             <label
               htmlFor="confPassword"
@@ -129,11 +216,17 @@ export default function RegisterForm() {
               name="confPassword"
               value={formData.confPassword}
               onChange={handleInputChange}
-              className="w-full px-4 py-2 border rounded-md focus:ring-2 focus:ring-blue-500 focus:outline-none"
+              className={`w-full px-4 py-2 border ${
+                errors.confPassword ? "border-red-500" : "border-gray-300"
+              } rounded-md focus:ring-2 focus:ring-blue-500 focus:outline-none`}
               placeholder="Confirm your password"
               required
             />
+            {errors.confPassword && (
+              <p className="text-red-500 text-sm mt-1">{errors.confPassword}</p>
+            )}
           </div>
+
           <button
             type="submit"
             className="w-full py-2 bg-gradient-to-r from-purple-600 to-blue-500 text-white font-bold rounded-md hover:from-blue-500 hover:to-purple-600 focus:outline-none"

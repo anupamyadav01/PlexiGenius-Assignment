@@ -7,42 +7,49 @@ import LoginForm from "./user/pages/Login";
 import RegisterForm from "./user/pages/Register";
 import Admin from "./admin/Admin";
 import Products from "./user/pages/Product";
-import Navbar from "./user/components/Navbar";
 import CartPage from "./user/pages/CartPage";
+
+// Context for sharing data across the app
 export const CartContext = createContext(null);
 
 const App = () => {
   const [cartItems, setCartItems] = useState([]);
   const [userRole, setUserRole] = useState(null);
-  const [loading, setLoading] = useState(true); // Track loading state
+  const [loading, setLoading] = useState(true);
+  const [loggedInUser, setLoggedInUser] = useState(null);
+
+  useEffect(() => {
+    const storedUser = JSON.parse(localStorage.getItem("user"));
+    if (storedUser) {
+      setLoggedInUser(storedUser);
+    }
+  }, []);
 
   useEffect(() => {
     const getUserDetails = async () => {
       try {
         const response = await axiosInstance.post("/auth/isLoggedIn");
         if (response.status === 200) {
-          const role = response?.data?.user?.role;
-          setUserRole(role);
-          localStorage.setItem("userRole", role);
-          console.log(response?.data?.user);
+          const user = response?.data?.user;
+          const role = user?.role || "user";
 
-          localStorage.setItem("user", JSON.stringify(response?.data?.user));
+          setLoggedInUser(user);
+          setUserRole(role);
+
+          localStorage.setItem("userRole", role);
+          localStorage.setItem("user", JSON.stringify(user));
         } else {
           setUserRole("user");
         }
       } catch (error) {
         console.error("Error fetching user details:", error);
         setUserRole("user");
+      } finally {
+        setLoading(false);
       }
     };
 
-    // Simulate loading for 2 seconds before fetching user details
-    const timer = setTimeout(() => {
-      getUserDetails();
-      setLoading(false); // After 2 seconds, stop the loading state
-    }, 2000); // 2-second delay for loading simulation
-
-    return () => clearTimeout(timer); // Cleanup timer on component unmount
+    getUserDetails();
   }, []);
 
   if (loading) {
@@ -61,12 +68,18 @@ const App = () => {
 
   return (
     <BrowserRouter>
-      <CartContext.Provider value={{ cartItems, setCartItems }}>
-        <Navbar />
+      <CartContext.Provider
+        value={{
+          cartItems,
+          setCartItems,
+          loggedInUser,
+          setLoggedInUser,
+        }}
+      >
         <Routes>
+          <Route path="/" element={<Home />} />
           <Route path="/login" element={<LoginForm />} />
           <Route path="/register" element={<RegisterForm />} />
-          <Route path="/" element={<Home />} />
           <Route path="/products" element={<Products />} />
           <Route path="/cart" element={<CartPage />} />
           <Route path="*" element={<PageNotFound />} />
