@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { Box } from "@mui/material";
-import { Edit, Delete } from "@mui/icons-material";
+import { Edit, Delete, ArrowBack, ArrowForward } from "@mui/icons-material";
 import axiosInstance from "../../../../axiosConfig";
 import AddProductDialog from "../../components/AddProductDialog";
 import EditProductDialog from "../../components/EditProductDialog";
@@ -26,16 +26,18 @@ const Products = () => {
     category: "",
     status: "Available",
   });
-  const [loading, setLoading] = useState(true); // Loading state
+  const [loading, setLoading] = useState(true);
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 5;
 
   const fetchProducts = async () => {
     try {
       const response = await axiosInstance.get("/products/showAllProducts");
       setProducts(response.data);
-      setLoading(false); // Set loading to false once products are fetched
+      setLoading(false);
     } catch (error) {
       console.error("Error fetching products:", error);
-      setLoading(false); // Set loading to false on error
+      setLoading(false);
     }
   };
 
@@ -128,16 +130,30 @@ const Products = () => {
     try {
       const response = await axiosInstance.get("/categories/getCategories");
       setCategories(response.data.categories);
-      console.log(response.data.categories);
     } catch (error) {
       console.error("Error fetching categories:", error);
     }
+  };
+
+  const handlePrevPage = () => {
+    setCurrentPage((prev) => Math.max(prev - 1, 1));
+  };
+
+  const handleNextPage = () => {
+    setCurrentPage((prev) =>
+      prev < Math.ceil(products.length / itemsPerPage) ? prev + 1 : prev
+    );
   };
 
   useEffect(() => {
     fetchProducts();
     fetchCategories();
   }, []);
+
+  const paginatedProducts = products.slice(
+    (currentPage - 1) * itemsPerPage,
+    currentPage * itemsPerPage
+  );
 
   return (
     <Box className="px-6 bg-gradient-to-br from-gray-200 to-blue-200 min-h-screen">
@@ -153,16 +169,14 @@ const Products = () => {
         </Box>
       </div>
 
-      {/* Custom Table with Skeleton Loading */}
       <div className="overflow-x-auto rounded-lg shadow-lg relative">
-        {/* Blurred background during loading */}
         {loading && (
           <div className="absolute inset-0 bg-gray-100 opacity-40 backdrop-blur-md z-10"></div>
         )}
 
         <table className="min-w-full bg-white border-separate border-spacing-0">
           <thead className="bg-gradient-to-r from-blue-600 via-purple-500 to-pink-500 text-white">
-            <tr className="text-sm ">
+            <tr className="text-sm">
               <th className="px-4 py-3 text-left">Image</th>
               <th className="px-4 py-3 text-left">Name</th>
               <th className="px-4 py-3 text-left">Description</th>
@@ -174,14 +188,10 @@ const Products = () => {
           </thead>
           <tbody>
             {loading
-              ? // Skeleton Loader
-                Array(5)
+              ? Array(5)
                   .fill(0)
                   .map((_, index) => (
-                    <tr
-                      key={index}
-                      className="odd:bg-gray-50 even:bg-gray-100 "
-                    >
+                    <tr key={index} className="odd:bg-gray-50 even:bg-gray-100">
                       <td className="px-4 py-3">
                         <div className="w-12 h-12 bg-gray-300 rounded-full"></div>
                       </td>
@@ -208,7 +218,7 @@ const Products = () => {
                       </td>
                     </tr>
                   ))
-              : products.map((product) => (
+              : paginatedProducts.map((product) => (
                   <tr
                     key={product._id}
                     className="odd:bg-gray-50 even:bg-gray-100 hover:bg-gray-200 transition-all"
@@ -235,7 +245,6 @@ const Products = () => {
                     <td className="px-4 py-3 text-xs sm:text-base">
                       {product.status}
                     </td>
-
                     <td className="px-4 flex gap-2 py-4">
                       <button
                         onClick={() => handleEditClick(product._id)}
@@ -244,7 +253,6 @@ const Products = () => {
                         <Edit className="mr-2" />
                         <span className="hidden sm:block">Edit</span>
                       </button>
-
                       <button
                         onClick={() => handleDeleteClick(product._id)}
                         className="px-4 py-2 border border-red-500 text-red-500 text-sm rounded-md hover:border-red-600 hover:text-red-600 flex items-center"
@@ -264,29 +272,52 @@ const Products = () => {
         </div>
       )}
 
-      {/* Add Product Dialog */}
+      <div className="flex justify-center gap-5 items-center mt-4">
+        <button
+          onClick={handlePrevPage}
+          disabled={currentPage === 1}
+          className={`flex items-center px-4 py-2 bg-blue-500 text-white rounded-md shadow ${
+            currentPage === 1 ? "opacity-50 cursor-not-allowed" : ""
+          }`}
+        >
+          <ArrowBack className="mr-2" />
+          Prev
+        </button>
+        <p className="text-gray-700">
+          Page {currentPage} of {Math.ceil(products.length / itemsPerPage)}
+        </p>
+        <button
+          onClick={handleNextPage}
+          disabled={currentPage === Math.ceil(products.length / itemsPerPage)}
+          className={`flex items-center px-4 py-2 bg-blue-500 text-white rounded-md shadow ${
+            currentPage === Math.ceil(products.length / itemsPerPage)
+              ? "opacity-50 cursor-not-allowed"
+              : ""
+          }`}
+        >
+          Next
+          <ArrowForward className="ml-2" />
+        </button>
+      </div>
+
       <AddProductDialog
         isDialogOpen={isDialogOpen}
         setDialogOpen={setDialogOpen}
-        newProduct={newProduct}
-        handleAddProduct={handleAddProduct}
-        handleFileChange={handleFileChange}
-        handleInputChange={handleInputChange}
         categories={categories}
+        handleInputChange={handleInputChange}
+        handleFileChange={handleFileChange}
+        handleAddProduct={handleAddProduct}
+        newProduct={newProduct}
       />
-
-      {/* Edit Product Dialog */}
       <EditProductDialog
         isEditDialogOpen={isEditDialogOpen}
         setEditDialogOpen={setEditDialogOpen}
         categories={categories}
-        newProduct={newProduct}
         handleInputChange={handleInputChange}
         handleFileChange={handleFileChange}
         handleEditProduct={handleEditProduct}
+        newProduct={newProduct}
       />
-
-      {/* Delete Confirmation Dialog */}
       <DeleteDialog
         isDeleteDialogOpen={isDeleteDialogOpen}
         setDeleteDialogOpen={setDeleteDialogOpen}

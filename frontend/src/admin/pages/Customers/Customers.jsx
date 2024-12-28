@@ -111,18 +111,18 @@ const Customer = () => {
           </table>
         ) : filteredCustomers.length > 0 ? (
           <table className="table-auto w-full">
-            <thead className="bg-gradient-to-r from-blue-600 via-purple-500 to-pink-500 text-white">
-              <tr className="border-b py-6">
-                <th className="px-4 py-4 text-base text-left font-semibold">
+            <thead className="w-full bg-gradient-to-r from-blue-600 via-purple-500 to-pink-500 text-white">
+              <tr className="border-b py-6 w-full">
+                <th className="px-4 py-4  text-base font-semibold">
                   Customer Name
                 </th>
-                <th className="px-4 py-4 text-base text-left font-semibold">
+                <th className="px-4 py-4 text-base  font-semibold">
                   Email Address
                 </th>
-                <th className="px-4 py-4 text-base text-left font-semibold">
+                <th className=" py-4 text-base  font-semibold">
                   Contact Number
                 </th>
-                <th className="px-4 py-4 text-base text-left font-semibold">
+                <th className="px-4 py-4 text-base font-semibold">
                   Products Purchased
                 </th>
               </tr>
@@ -130,8 +130,8 @@ const Customer = () => {
             <tbody>
               {filteredCustomers.map((customer) => (
                 <tr
-                  key={customer.id}
-                  className="odd:bg-gray-100 even:bg-gray-200 hover:bg-gray-50"
+                  key={customer._id}
+                  className="odd:bg-gray-100 even:bg-gray-200 hover:bg-gray-50 border "
                 >
                   <td className="px-4 py-2 text-sm sm:text-base">
                     {customer.name}

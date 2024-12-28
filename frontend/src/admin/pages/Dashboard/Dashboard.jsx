@@ -11,6 +11,10 @@ const Dashboard = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
+  // Pagination states
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 5;
+
   const handleLogout = async () => {
     try {
       const response = await axiosInstance.post("/auth/logout");
@@ -38,18 +42,27 @@ const Dashboard = () => {
     getAllData();
   }, []);
 
+  // Pagination logic
+  const totalProducts = dashboardData?.Products?.length || 0;
+  const totalPages = Math.ceil(totalProducts / itemsPerPage);
+  const paginatedProducts = dashboardData?.Products?.slice(
+    (currentPage - 1) * itemsPerPage,
+    currentPage * itemsPerPage
+  );
+
+  const handlePageChange = (newPage) => {
+    setCurrentPage(newPage);
+  };
+
   // Check for loading and error states
   if (loading)
     return (
       <div className="flex justify-center items-center h-screen">
-        <Skeleton count={1} width={200} height={50} />{" "}
-        {/* Loader while loading */}
+        <Skeleton count={1} width={200} height={50} />
       </div>
     );
 
   if (error) return <p>{error}</p>;
-  console.log(dashboardData);
-
   const cardsConfig = [
     {
       name: "Categories",
@@ -93,14 +106,12 @@ const Dashboard = () => {
     >
       {/* Navbar */}
       <nav className="flex justify-between items-center h-16 px-4 sm:px-6 bg-white text-black shadow-lg">
-        {/* Logo */}
         <div className="flex items-center space-x-4">
           <h1 className="text-xl sm:text-2xl font-extrabold bg-clip-text text-transparent bg-gradient-to-r from-blue-600 via-purple-500 to-pink-500">
             Plexi<span className="text-gray-900">Genius</span>
           </h1>
         </div>
 
-        {/* Navigation Links */}
         <div className="flex items-center space-x-4">
           <Link
             to="/"
@@ -140,7 +151,7 @@ const Dashboard = () => {
                   <Skeleton width="50%" />
                 </div>
               ))
-            : cardsConfig.map((card) => (
+            : cardsConfig?.map((card) => (
                 <Link
                   key={card?.name}
                   to={card?.path}
@@ -157,59 +168,78 @@ const Dashboard = () => {
         <div className="mt-8">
           <h2 className="text-xl font-bold text-gray-700 mb-4">All Products</h2>
           <div className="overflow-x-auto">
-            {loading ? (
-              <Skeleton height={400} count={5} className="rounded-lg" />
-            ) : (
-              <table className="min-w-full bg-white shadow-lg rounded-lg">
-                <thead className="bg-gradient-to-r from-blue-600 via-purple-500 to-pink-500 text-white">
-                  <tr>
-                    <th className="px-6 py-3 text-left text-sm font-bold uppercase">
-                      Product Name
-                    </th>
-                    <th className="px-6 py-3 text-left text-sm font-bold uppercase">
-                      Category
-                    </th>
-                    <th className="px-6 py-3 text-left text-sm font-bold uppercase">
-                      Price
-                    </th>
-                    <th className="px-6 py-3 text-left text-sm font-bold uppercase">
-                      Status
-                    </th>
+            <table className="min-w-full bg-white shadow-lg rounded-lg">
+              <thead className="bg-gradient-to-r from-blue-600 via-purple-500 to-pink-500 text-white">
+                <tr>
+                  <th className="px-6 py-3 text-left text-sm font-bold uppercase">
+                    Product Name
+                  </th>
+                  <th className="px-6 py-3 text-left text-sm font-bold uppercase">
+                    Category
+                  </th>
+                  <th className="px-6 py-3 text-left text-sm font-bold uppercase">
+                    Price
+                  </th>
+                  <th className="px-6 py-3 text-left text-sm font-bold uppercase">
+                    Status
+                  </th>
+                </tr>
+              </thead>
+              <tbody>
+                {paginatedProducts?.map((product) => (
+                  <tr key={product._id} className="hover:bg-gray-100">
+                    <td className="px-6 py-4 text-sm text-gray-700">
+                      {product.name}
+                    </td>
+                    <td className="px-6 py-4 text-sm text-gray-700">
+                      {product.category}
+                    </td>
+                    <td className="px-6 py-4 text-sm text-gray-700">
+                      ${product.price}
+                    </td>
+                    {product?.status === "Not Available" && (
+                      <td className="px-6 py-4 text-sm font-bold text-red-500">
+                        {product.status}
+                      </td>
+                    )}
+                    {product?.status === "Available" && (
+                      <td className="px-6 py-4 text-sm font-bold text-green-500">
+                        {product.status}
+                      </td>
+                    )}
                   </tr>
-                </thead>
-                <tbody>
-                  {dashboardData?.Products?.map((product) => (
-                    <tr key={product._id} className="hover:bg-gray-100">
-                      <td className="px-6 py-4 text-sm text-gray-700">
-                        {product.name}
-                      </td>
-                      <td className="px-6 py-4 text-sm text-gray-700">
-                        {product.category}
-                      </td>
-                      <td className="px-6 py-4 text-sm text-gray-700">
-                        ${product.price}
-                      </td>
-                      {product?.status === "Not Available" && (
-                        <td className="px-6 py-4 text-sm font-bold text-red-500">
-                          {product.status}
-                        </td>
-                      )}
-                      {product?.status === "Available" && (
-                        <td className="px-6 py-4 text-sm font-bold text-green-500">
-                          {product.status}
-                        </td>
-                      )}
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            )}
+                ))}
+              </tbody>
+            </table>
 
             {dashboardData?.Products?.length === 0 && (
               <div className="flex items-center justify-center mt-8">
                 <p className="text-lg text-gray-500">No products found.</p>
               </div>
             )}
+          </div>
+
+          {/* Pagination Controls */}
+          <div className="flex justify-center gap-6 items-center mt-4">
+            <Button
+              disabled={currentPage === 1}
+              onClick={() => handlePageChange(currentPage - 1)}
+              variant="outlined"
+              color="primary"
+            >
+              Previous
+            </Button>
+            <span className="text-sm text-gray-600">
+              Page {currentPage} of {totalPages}
+            </span>
+            <Button
+              disabled={currentPage === totalPages}
+              onClick={() => handlePageChange(currentPage + 1)}
+              variant="outlined"
+              color="primary"
+            >
+              Next
+            </Button>
           </div>
         </div>
       </div>
