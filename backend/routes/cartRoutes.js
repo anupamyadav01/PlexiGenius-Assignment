@@ -13,7 +13,7 @@ cartRoutes.post("/addToCart/:productId", getUserDetails, addToCart);
 
 cartRoutes.get("/getCartItems", getUserDetails, getCartItems);
 
-cartRoutes.delete("/removeFromCart", removeFromCart);
+cartRoutes.delete("/removeFromCart/:productId", getUserDetails, removeFromCart);
 
 cartRoutes.post(
   "/updatePurchasedItems/:productId",

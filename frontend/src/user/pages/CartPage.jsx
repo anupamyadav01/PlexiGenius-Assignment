@@ -1,14 +1,26 @@
 import { FaTrashAlt } from "react-icons/fa";
-import { useContext } from "react";
-import { CartContext } from "../../App";
+import { useEffect, useState } from "react";
 import { v4 as generateUUID } from "uuid";
 import axiosInstance from "../../../axiosConfig";
 import Navbar from "../components/Navbar";
 
 const CartPage = () => {
-  const { cartItems } = useContext(CartContext);
+  const [cartItems, setCartItems] = useState([]);
 
-  const onDelete = () => {};
+  const onDelete = async (productId) => {
+    try {
+      const response = await axiosInstance.delete(
+        `/cart/removeFromCart/${productId}`
+      );
+      setCartItems((perv) => {
+        return perv.filter((item) => item.productId !== productId);
+      });
+      console.log(response);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
   console.log(cartItems);
 
   const updatePurchasedItems = async (productId) => {
@@ -44,6 +56,18 @@ const CartPage = () => {
       console.error("Error in onBuyNow: ", error);
     }
   };
+
+  useEffect(() => {
+    const getCartItem = async () => {
+      try {
+        const response = await axiosInstance.get("/cart/getCartItems");
+        setCartItems(response?.data);
+      } catch (error) {
+        console.log(error);
+      }
+    };
+    getCartItem();
+  }, []);
   return (
     <div className="w-full">
       <Navbar />

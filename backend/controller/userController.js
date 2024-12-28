@@ -160,13 +160,13 @@ export const removeFromCart = async (req, res) => {
       return res.status(401).json({ message: "User not authenticated" });
     }
 
-    const product = await ProductModel.findById(productId);
+    const product = await ProductModel.findByIdAndDelete(productId);
 
     if (!product) {
       return res.status(404).json({ message: "Product not found" });
     }
 
-    return res.status(200).json({ message: "Product removed from cart" });
+    return res.status(200).json({ message: "Product deleted sucessfully." });
   } catch (error) {
     console.error("Error in removeFromCart: ", error);
     return res.status(500).json({ message: "Internal server error" });
@@ -175,13 +175,17 @@ export const removeFromCart = async (req, res) => {
 
 export const getCartItems = async (req, res) => {
   try {
-    const user = req.user;
+    const user = await UserModel.findById(req.user._id).populate({
+      path: "cart.productId",
+      model: ProductModel,
+      select: "name image description price category status",
+    });
+
     if (!user) {
       return res.status(401).json({ message: "User not authenticated" });
     }
-    return res
-      .status(200)
-      .json({ message: "Cart items retrieved successfully" });
+
+    return res.status(200).json(user.cart);
   } catch (error) {
     console.error("Error in getCartItems: ", error);
     return res.status(500).json({ message: "Internal server error" });
