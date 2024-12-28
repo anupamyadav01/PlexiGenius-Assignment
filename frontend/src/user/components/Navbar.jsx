@@ -53,7 +53,7 @@ const Navbar = () => {
           {loggedInUser ? (
             <>
               {/* Admin Dashboard Button */}
-              {loggedInUser.role === "admin" && (
+              {loggedInUser?.role === "admin" && (
                 <Link
                   to="/admin/dashboard"
                   className="bg-green-500 text-white text-sm sm:text-base px-3 py-2 sm:px-4 sm:py-2 rounded-md hover:bg-green-600 transition shadow-md"
@@ -70,7 +70,7 @@ const Navbar = () => {
                 <AiOutlineShoppingCart size={20} className=" sm:size-7" />
                 {loggedInUser.cart?.length > 0 && (
                   <span className="absolute -top-2 -right-2 bg-red-500 text-white text-xs sm:text-sm font-bold rounded-full w-5 h-5 sm:w-6 sm:h-6 flex items-center justify-center">
-                    {loggedInUser.cart.length}
+                    {loggedInUser?.cart?.length || 0}
                   </span>
                 )}
               </Link>

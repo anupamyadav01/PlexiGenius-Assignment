@@ -12,16 +12,16 @@ const CartPage = () => {
       const response = await axiosInstance.delete(
         `/cart/removeFromCart/${productId}`
       );
-      setCartItems((perv) => {
-        return perv.filter((item) => item.productId !== productId);
-      });
       console.log(response);
+
+      // Update the state to reflect the removed product
+      setCartItems((prev) =>
+        prev.filter((item) => item.productId._id !== productId)
+      );
     } catch (error) {
-      console.log(error);
+      console.error("Error in onDelete:", error);
     }
   };
-
-  console.log(cartItems);
 
   const updatePurchasedItems = async (productId) => {
     try {
@@ -62,6 +62,7 @@ const CartPage = () => {
       try {
         const response = await axiosInstance.get("/cart/getCartItems");
         setCartItems(response?.data);
+        console.log(response?.data);
       } catch (error) {
         console.log(error);
       }

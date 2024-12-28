@@ -67,7 +67,7 @@ export const loginUser = async (req, res) => {
       sameSite: process.env.NODE_ENV === "production" ? "None" : "Lax",
     });
 
-    return res.status(200).json({ result: existingUser, token });
+    return res.status(200).json({ user: existingUser });
   } catch (error) {
     console.log("Error in loginUser: ", error);
     return res.status(500).json({ message: "Internal server error" });
@@ -150,25 +150,23 @@ export const removeFromCart = async (req, res) => {
   try {
     const { productId } = req.params;
 
-    if (!mongoose.Types.ObjectId.isValid(productId)) {
-      return res.status(400).json({ message: "Invalid product ID format" });
-    }
-
     const user = req.user;
 
     if (!user) {
       return res.status(401).json({ message: "User not authenticated" });
     }
+    const newProduId = new mongoose.Types.ObjectId(productId);
+    console.log(newProduId);
 
-    const product = await ProductModel.findByIdAndDelete(productId);
+    const updatedUser = await UserModel.findOneAndUpdate(
+      { _id: user._id, "cart.productId": newProduId },
+      { $pull: { cart: { productId: newProduId } } },
+      { new: true }
+    );
 
-    if (!product) {
-      return res.status(404).json({ message: "Product not found" });
-    }
-
-    return res.status(200).json({ message: "Product deleted sucessfully." });
+    return res.status(200).json({ message: "Product removed from cart" });
   } catch (error) {
-    console.error("Error in removeFromCart: ", error);
+    console.error("Error in removeFromCart:", error);
     return res.status(500).json({ message: "Internal server error" });
   }
 };

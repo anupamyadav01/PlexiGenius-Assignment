@@ -1,10 +1,12 @@
-import { useState } from "react";
+import { useContext, useState } from "react";
 import axiosInstance from "../../../axiosConfig";
 import toast, { Toaster } from "react-hot-toast";
 import { useNavigate } from "react-router-dom";
+import { CartContext } from "../../App";
 
 export default function LoginForm() {
   const navigate = useNavigate();
+  const { setLoggedInUser } = useContext(CartContext);
   const [formData, setFormData] = useState({
     email: "",
     password: "",
@@ -55,6 +57,7 @@ export default function LoginForm() {
           navigate("/");
         }, 2000);
       }
+      setLoggedInUser(response?.data.user);
     } catch (error) {
       console.error(error);
       toast.error("Invalid credentials", {

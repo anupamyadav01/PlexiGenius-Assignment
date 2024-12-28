@@ -19,13 +19,6 @@ const App = () => {
   const [loggedInUser, setLoggedInUser] = useState(null);
 
   useEffect(() => {
-    const storedUser = JSON.parse(localStorage.getItem("user"));
-    if (storedUser) {
-      setLoggedInUser(storedUser);
-    }
-  }, []);
-
-  useEffect(() => {
     const getUserDetails = async () => {
       try {
         const response = await axiosInstance.post("/auth/isLoggedIn");
