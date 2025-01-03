@@ -3,6 +3,7 @@ import { useEffect, useState } from "react";
 import { v4 as generateUUID } from "uuid";
 import axiosInstance from "../../../axiosConfig";
 import Navbar from "../components/Navbar";
+import toast, { Toaster } from "react-hot-toast";
 
 const CartPage = () => {
   const [cartItems, setCartItems] = useState([]);
@@ -14,7 +15,6 @@ const CartPage = () => {
       );
       console.log(response);
 
-      // Update the state to reflect the removed product
       setCartItems((prev) =>
         prev.filter((item) => item.productId._id !== productId)
       );
@@ -22,7 +22,6 @@ const CartPage = () => {
       console.error("Error in onDelete:", error);
     }
   };
-
   const updatePurchasedItems = async (productId) => {
     try {
       const response = await axiosInstance.post(
@@ -51,6 +50,7 @@ const CartPage = () => {
       if (response.status === 201) {
         updatePurchasedItems(productId);
       }
+      toast.success("Order placed sucessfully!!🥳🥳");
       console.log(response);
     } catch (error) {
       console.error("Error in onBuyNow: ", error);
@@ -72,6 +72,7 @@ const CartPage = () => {
   return (
     <div className="w-full">
       <Navbar />
+      <Toaster />
       <div className="p-6 bg-gray-50 min-h-screen">
         <h1 className="text-3xl font-bold text-center mb-8">Your Cart</h1>
 
